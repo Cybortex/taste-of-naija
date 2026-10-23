@@ -68,9 +68,6 @@ export default function CartPage() {
                 <div className="font-heading font-bold text-brand-deep text-base">
                   {item.name}
                 </div>
-                {item.selectedSpice && (
-                  <div className="text-xs text-brand-muted">Spice: {item.selectedSpice}</div>
-                )}
                 {item.isPack && (
                   <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded-full inline-block mt-1">
                     1 Pack

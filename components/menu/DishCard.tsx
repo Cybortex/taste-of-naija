@@ -34,7 +34,7 @@ export function DishCard({ item, priority = false }: DishCardProps) {
     addItem(
       item,
       1,
-      item.spiceLevel || "Medium",
+      undefined,
       combo ? { swallowName: combo.swallowName, soupName: combo.soupName } : undefined
     );
 

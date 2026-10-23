@@ -160,12 +160,6 @@ export function CartDrawer() {
                         )}
                       </div>
 
-                      {item.selectedSpice && (
-                        <div className="text-[11px] text-brand-muted mt-0.5">
-                          Spice: <span className="font-medium text-brand-deep">{item.selectedSpice}</span>
-                        </div>
-                      )}
-
                       {item.meta && (
                         <div className="text-[11px] text-brand-muted/80 mt-0.5">
                           {item.meta.swallowName} + {item.meta.soupName}

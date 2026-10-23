@@ -73,10 +73,8 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
     meta?: OrderItem["meta"]
   ) => {
     setItems((prev) => {
-      // Check if item with same ID and same spice exists
-      const existingIndex = prev.findIndex(
-        (i) => i.itemId === item.id && i.selectedSpice === spiceLevel
-      );
+      // Check if item with same ID exists
+      const existingIndex = prev.findIndex((i) => i.itemId === item.id);
 
       if (existingIndex > -1) {
         const copy = [...prev];
@@ -92,7 +90,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         price: item.price,
         quantity,
         isPack: item.isPack,
-        selectedSpice: spiceLevel || item.spiceLevel || "Medium",
+        selectedSpice: undefined,
         meta,
       };
 

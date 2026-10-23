@@ -42,7 +42,6 @@ const SAMPLE_ORDERS: Order[] = [
         price: 1400,
         quantity: 2,
         isPack: true,
-        selectedSpice: "Medium",
       },
       {
         id: "item-2",
@@ -105,7 +104,6 @@ const SAMPLE_ORDERS: Order[] = [
         price: 2500,
         quantity: 4,
         isPack: true,
-        selectedSpice: "Medium",
       },
       {
         id: "item-6",

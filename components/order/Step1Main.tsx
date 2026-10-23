@@ -32,7 +32,7 @@ export function Step1Main({ onContinue }: Step1MainProps) {
   const handleToggleOrAdd = (item: MenuItem, meta?: { swallowName?: string; soupName?: string }) => {
     const qty = getItemQuantity(item.id);
     if (qty === 0) {
-      addItem(item, 1, item.spiceLevel || "Medium", meta);
+      addItem(item, 1, undefined, meta);
     }
   };
 

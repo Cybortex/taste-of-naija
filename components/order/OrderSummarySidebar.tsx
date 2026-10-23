@@ -58,9 +58,6 @@ export function OrderSummarySidebar() {
                 <div className="font-heading font-bold text-brand-deep leading-tight">
                   {item.name}
                 </div>
-                {item.selectedSpice && (
-                  <div className="text-[10px] text-brand-muted">Spice: {item.selectedSpice}</div>
-                )}
                 {item.meta && (
                   <div className="text-[10px] text-brand-muted/80">
                     {item.meta.swallowName} + {item.meta.soupName}

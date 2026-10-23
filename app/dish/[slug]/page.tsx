@@ -32,7 +32,6 @@ export default function DishDetailPage({ params }: DishDetailPageProps) {
 
   const { addItem, items } = useCart();
   const [quantity, setQuantity] = useState(1);
-  const [selectedSpice, setSelectedSpice] = useState<"Mild" | "Medium" | "Hot">("Medium");
   const [addedSuccess, setAddedSuccess] = useState(false);
 
   if (!item) {
@@ -44,7 +43,7 @@ export default function DishDetailPage({ params }: DishDetailPageProps) {
   const cartItem = items.find((i) => i.itemId === item.id);
 
   const handleAddToCart = () => {
-    addItem(item, quantity, selectedSpice);
+    addItem(item, quantity);
     setAddedSuccess(true);
     setTimeout(() => setAddedSuccess(false), 1200);
   };
@@ -134,32 +133,6 @@ export default function DishDetailPage({ params }: DishDetailPageProps) {
                     >
                       {ing}
                     </span>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Spice Level Selector if applicable */}
-            {item.spiceLevel && (
-              <div className="pt-3">
-                <span className="block text-xs font-bold text-brand-deep uppercase tracking-wider mb-2 flex items-center gap-1.5">
-                  <Flame className="w-3.5 h-3.5 text-brand-orange" />
-                  Select Kitchen Spice Level
-                </span>
-                <div className="grid grid-cols-3 gap-2">
-                  {(["Mild", "Medium", "Hot"] as const).map((spice) => (
-                    <button
-                      key={spice}
-                      type="button"
-                      onClick={() => setSelectedSpice(spice)}
-                      className={`py-2 px-3 rounded-xl border text-xs font-bold transition-all ${
-                        selectedSpice === spice
-                          ? "bg-brand-orange text-white border-brand-orange shadow-xs"
-                          : "bg-white text-brand-deep border-brand-border hover:bg-stone-50"
-                      }`}
-                    >
-                      {spice}
-                    </button>
                   ))}
                 </div>
               </div>

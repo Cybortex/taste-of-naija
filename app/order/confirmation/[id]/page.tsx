@@ -168,9 +168,6 @@ export default function OrderConfirmationPage({ params }: ConfirmationPageProps)
                 <div className="font-heading font-bold text-brand-deep">
                   {item.quantity} × {item.name}
                 </div>
-                {item.selectedSpice && (
-                  <div className="text-[11px] text-brand-muted">Spice: {item.selectedSpice}</div>
-                )}
                 {item.isPack && (
                   <span className="text-[10px] font-bold text-emerald-800 bg-emerald-50 px-1.5 py-0.5 rounded">
                     1 Pack

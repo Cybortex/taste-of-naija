@@ -26,9 +26,9 @@ const FAQS: FAQItem[] = [
       "Every single soup, pepper soup, and stew is packed in heavy-duty, food-grade, airtight tamper-evident containers with heat-sealed rims. Swallows are wrapped fresh while steaming hot and packed in separate insulated compartments. All orders travel in thermal insulated delivery boxes on our dispatch bikes.",
   },
   {
-    question: "Can I adjust the spice level of my food?",
+    question: "Can I request custom catering or special orders?",
     answer:
-      "Yes! When you build your order in Step 2, you can choose between Mild Pepper (gentle heat with deep flavour), Medium (our signature authentic Naija heat), and Hot & Fiery (for seasoned pepper lovers).",
+      "Yes! All our dishes are cooked to traditional authentic Nigerian recipes. If you have custom orders, corporate catering, or special requests, you can call our direct helpline at 09071649725 or message us on WhatsApp.",
   },
   {
     question: "Do I have to pay online if I am dining in?",

@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Flame, ArrowLeft, Check, CupSoda } from "lucide-react";
+import { Plus, ArrowLeft, Check, CupSoda } from "lucide-react";
 import { PROTEINS, SIDES, DRINKS } from "@/data/menu";
 import { MenuItem } from "@/types/menu";
 import { formatPrice } from "@/lib/utils";
@@ -14,13 +14,7 @@ interface Step2AddonsProps {
 }
 
 export function Step2Addons({ onBack, onContinue }: Step2AddonsProps) {
-  const { items, addItem, updateQuantity, updateSpice } = useCart();
-  const [globalSpice, setGlobalSpice] = useState<"Mild" | "Medium" | "Hot">("Medium");
-
-  // Check if order contains spicy items or soups
-  const hasSpicyOrSoup = items.some((item) =>
-    ["soups", "grills", "combos"].includes(item.category)
-  );
+  const { items, addItem, updateQuantity } = useCart();
 
   const getItemQuantity = (id: string) => {
     const found = items.find((i) => i.itemId === id);
@@ -30,18 +24,8 @@ export function Step2Addons({ onBack, onContinue }: Step2AddonsProps) {
   const handleToggleOrAdd = (item: MenuItem) => {
     const qty = getItemQuantity(item.id);
     if (qty === 0) {
-      addItem(item, 1, globalSpice);
+      addItem(item, 1);
     }
-  };
-
-  const handleSpiceChange = (spice: "Mild" | "Medium" | "Hot") => {
-    setGlobalSpice(spice);
-    // Update existing items in cart that support spice
-    items.forEach((item) => {
-      if (["soups", "grills", "combos"].includes(item.category)) {
-        updateSpice(item.id, spice);
-      }
-    });
   };
 
   return (
@@ -79,51 +63,6 @@ export function Step2Addons({ onBack, onContinue }: Step2AddonsProps) {
           </button>
         </div>
       </div>
-
-      {/* Spice Level Selector (Conditioned on soups/grills presence) */}
-      {hasSpicyOrSoup && (
-        <div className="p-4 rounded-card bg-orange-50/80 border border-orange-200/90 space-y-3">
-          <div className="flex items-center gap-2">
-            <Flame className="w-5 h-5 text-brand-orange" />
-            <h3 className="font-heading font-bold text-brand-deep text-sm sm:text-base">
-              Choose Kitchen Spice Level
-            </h3>
-          </div>
-          <p className="text-xs text-brand-muted">
-            How hot do you want your soups, stew, and pepper broth prepared?
-          </p>
-
-          <div className="grid grid-cols-3 gap-2.5 max-w-md">
-            {[
-              { level: "Mild", label: "Mild Pepper", desc: "Gentle heat, full flavour" },
-              { level: "Medium", label: "Medium (Standard)", desc: "Authentic Naija heat" },
-              { level: "Hot", label: "Hot & Fiery", desc: "For real pepper lovers" },
-            ].map(({ level, label, desc }) => (
-              <button
-                key={level}
-                type="button"
-                onClick={() => handleSpiceChange(level as any)}
-                className={`p-3 rounded-xl border text-left transition-all ${
-                  globalSpice === level
-                    ? "bg-white border-brand-orange ring-2 ring-brand-orange/30 shadow-xs"
-                    : "bg-white/60 border-orange-200/70 hover:bg-white"
-                }`}
-              >
-                <div
-                  className={`text-xs font-bold ${
-                    globalSpice === level ? "text-brand-orange" : "text-brand-deep"
-                  }`}
-                >
-                  {label}
-                </div>
-                <div className="text-[10px] text-brand-muted mt-0.5 leading-tight">
-                  {desc}
-                </div>
-              </button>
-            ))}
-          </div>
-        </div>
-      )}
 
       {/* Proteins Section */}
       <div className="space-y-4">

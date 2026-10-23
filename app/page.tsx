@@ -230,10 +230,10 @@ export default function HomePage() {
                 02
               </div>
               <h3 className="font-heading font-bold text-lg text-brand-deep">
-                Add Proteins, Sides & Spice
+                Add Proteins, Sides & Drinks
               </h3>
               <p className="text-xs sm:text-sm text-brand-muted leading-relaxed">
-                Add Goat Meat, Fried Chicken, Fish, Shaki, Dodo, or Moi Moi. Proteins and sides never incur pack charges. Select your preferred kitchen heat level.
+                Add Goat Meat, Fried Chicken, Fish, Shaki, Dodo, Moi Moi, or ice-cold drinks. Proteins, sides, and beverages never incur pack charges.
               </p>
             </div>
             <div className="mt-4 pt-3 border-t border-brand-border/40 text-xs font-semibold text-brand-orange">
