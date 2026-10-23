@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { Utensils, Sparkles, CheckCircle2, ShoppingBag } from "lucide-react";
 import { Step1Main } from "@/components/order/Step1Main";
@@ -18,6 +18,13 @@ export default function OrderPage() {
   const hasMain = items.some((i) =>
     ["combos", "rice", "grills", "swallows", "soups"].includes(i.category)
   );
+
+  // Edge case from docs: Removing the last main dish returns user to Step 1
+  useEffect(() => {
+    if (!hasMain && currentStep > 1) {
+      setCurrentStep(1);
+    }
+  }, [hasMain, currentStep]);
 
   return (
     <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-8 sm:py-12">
