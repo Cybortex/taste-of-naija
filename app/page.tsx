@@ -10,6 +10,7 @@ import {
   Clock,
   ShieldCheck,
   Truck,
+  Package,
   Utensils,
   Flame,
   Star,
