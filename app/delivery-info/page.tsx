@@ -114,6 +114,7 @@ export default function DeliveryInfoPage() {
             <ul className="text-xs text-brand-muted space-y-1">
               <li>• All Meats & Proteins (Beef, Ponmo, Goat Meat, Chicken, Fish, Turkey)</li>
               <li>• All Sides (Dodo, Moi Moi, Yam Sauce, Ewa Agoyin)</li>
+              <li>• All Chilled Drinks (Zobo, Chapman, Palm Wine, Kunu Aya, Sodas)</li>
             </ul>
           </div>
         </div>

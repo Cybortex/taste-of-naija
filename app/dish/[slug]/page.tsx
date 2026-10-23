@@ -10,7 +10,6 @@ import {
   Flame,
   Star,
   Package,
-  Sparkles,
   ShieldCheck,
   Clock,
   Heart,

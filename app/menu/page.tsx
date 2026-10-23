@@ -2,7 +2,7 @@
 
 import React, { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import { Search, Sparkles, Filter, X, Package, Truck } from "lucide-react";
+import { Search, Star, Filter, X, Package, Truck } from "lucide-react";
 import { ALL_MENU_ITEMS, CATEGORIES } from "@/data/menu";
 import { DishCard } from "@/components/menu/DishCard";
 import { formatPrice } from "@/lib/utils";
@@ -113,7 +113,7 @@ function MenuContent() {
                   : "bg-white border border-brand-border text-brand-deep hover:bg-stone-50"
               }`}
             >
-              <Sparkles className="w-3.5 h-3.5" />
+              <Star className="w-3.5 h-3.5 fill-current" />
               <span>Popular Only</span>
             </button>
 

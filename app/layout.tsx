@@ -1,4 +1,5 @@
 import type { Metadata, Viewport } from "next";
+import Script from "next/script";
 import "./globals.css";
 import { CartProvider } from "@/lib/cart-context";
 import { ConvexClientProvider } from "@/components/providers/ConvexClientProvider";
@@ -62,6 +63,7 @@ export default function RootLayout({
             <MobileOrderBar />
           </CartProvider>
         </ConvexClientProvider>
+        <Script src="https://js.paystack.co/v1/inline.js" strategy="lazyOnload" />
       </body>
     </html>
   );

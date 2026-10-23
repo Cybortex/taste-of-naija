@@ -48,7 +48,7 @@ const FAQS: FAQItem[] = [
   {
     question: "Do you cater for office parties and large events?",
     answer:
-      "Yes! We regularly provide catering trays and individual boxed packs for corporate meetings, birthday celebrations, and family gatherings across Lagos. Contact us via our contact page or on WhatsApp at +234 812 345 6789 for custom event menus.",
+      "Yes! We regularly provide catering trays and individual boxed packs for corporate meetings, birthday celebrations, and family gatherings across Lagos. Contact us via our contact page, chat on WhatsApp at 09071649725, or call our direct helpline at 09071649725 for custom orders and event menus.",
   },
 ];
 

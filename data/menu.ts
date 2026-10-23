@@ -558,6 +558,82 @@ export const SIDES: MenuItem[] = [
   },
 ];
 
+export const DRINKS: MenuItem[] = [
+  {
+    id: "drink-zobo",
+    name: "Chilled Zobo Special",
+    slug: "chilled-zobo",
+    category: "drinks",
+    price: 1000,
+    unit: "per 500ml bottle",
+    description: "Cold-infused ruby hibiscus calyces brewed with real ginger, cloves, and fresh pineapple juice.",
+    isPack: false,
+    isPopular: true,
+  },
+  {
+    id: "drink-kunu-aya",
+    name: "Kunu Aya (Tiger Nut Milk)",
+    slug: "kunu-aya",
+    category: "drinks",
+    price: 1500,
+    unit: "per 500ml bottle",
+    description: "Creamy, naturally sweet tiger nut milk blended with dates, coconut, and a warm hint of ginger.",
+    isPack: false,
+    isPopular: true,
+  },
+  {
+    id: "drink-chapman",
+    name: "Signature Chapman Mocktail",
+    slug: "chapman",
+    category: "drinks",
+    price: 2000,
+    unit: "per glass/bottle",
+    description: "The classic Lagos party mocktail infused with Angostura bitters, citrus, grenadine, and cucumber garnish.",
+    isPack: false,
+    isPopular: true,
+  },
+  {
+    id: "drink-palm-wine",
+    name: "Fresh Palm Wine",
+    slug: "palm-wine",
+    category: "drinks",
+    price: 2500,
+    unit: "per 1L bottle",
+    description: "Sweet, gently effervescent fresh native raffia palm sap, chilled to refreshing perfection.",
+    isPack: false,
+  },
+  {
+    id: "drink-malta-guinness",
+    name: "Malta Guinness",
+    slug: "malta-guinness",
+    category: "drinks",
+    price: 1000,
+    unit: "per can",
+    description: "Ice-cold premium non-alcoholic malt drink packed with energizing B-vitamins.",
+    isPack: false,
+  },
+  {
+    id: "drink-soft-drink",
+    name: "Chilled Soda (Coke / Fanta / Sprite)",
+    slug: "chilled-soda",
+    category: "drinks",
+    price: 700,
+    unit: "per 50cl bottle",
+    description: "Crisp and frosty 50cl bottle of Coca-Cola, Fanta Orange, or Sprite.",
+    isPack: false,
+  },
+  {
+    id: "drink-water",
+    name: "Bottled Spring Water (75cl)",
+    slug: "bottled-water",
+    category: "drinks",
+    price: 500,
+    unit: "per 75cl bottle",
+    description: "Pure, natural chilled bottled spring water.",
+    isPack: false,
+  },
+];
+
 // All menu items indexed for lookup
 export const ALL_MENU_ITEMS: MenuItem[] = [
   ...SWALLOWS,
@@ -567,6 +643,7 @@ export const ALL_MENU_ITEMS: MenuItem[] = [
   ...GRILLS_AND_PEPPER_SOUPS,
   ...PROTEINS,
   ...SIDES,
+  ...DRINKS,
 ];
 
 export const CATEGORIES: { id: string; label: string; count: number }[] = [
@@ -578,6 +655,7 @@ export const CATEGORIES: { id: string; label: string; count: number }[] = [
   { id: "swallows", label: "Swallows", count: SWALLOWS.length },
   { id: "proteins", label: "Meats & Seafood", count: PROTEINS.length },
   { id: "sides", label: "Sides & Street Food", count: SIDES.length },
+  { id: "drinks", label: "Drinks & Refreshments", count: DRINKS.length },
 ];
 
 export function getMenuItemBySlug(slug: string): MenuItem | undefined {

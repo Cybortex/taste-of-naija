@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { motion } from "framer-motion";
-import { Sparkles, Utensils, Flame, Check, Plus } from "lucide-react";
+import { Utensils, Flame, Check, Plus, Star, ArrowRight } from "lucide-react";
 import { SWALLOWS, SOUPS, COMBOS, RICE, GRILLS_AND_PEPPER_SOUPS } from "@/data/menu";
 import { MenuItem, ComboItem } from "@/types/menu";
 import { formatPrice } from "@/lib/utils";
@@ -38,22 +38,35 @@ export function Step1Main({ onContinue }: Step1MainProps) {
 
   return (
     <div className="space-y-6">
-      <div>
-        <span className="text-xs font-bold text-brand-green uppercase tracking-wider bg-brand-green/10 px-2.5 py-1 rounded-full">
-          Step 1 of 3
-        </span>
-        <h2 className="font-heading font-black text-2xl sm:text-3xl text-brand-deep mt-2">
-          Choose Your Main Dish
-        </h2>
-        <p className="text-brand-muted text-sm mt-1">
-          Select your favourite authentic Nigerian mains. Every main dish counts as 1 pack.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-xs font-bold text-brand-green uppercase tracking-wider bg-brand-green/10 px-2.5 py-1 rounded-full">
+            Step 1 of 3
+          </span>
+          <h2 className="font-heading font-black text-2xl sm:text-3xl text-brand-deep mt-2">
+            Choose Your Main Dish
+          </h2>
+          <p className="text-brand-muted text-sm mt-1">
+            Select your favourite authentic Nigerian mains. Every main dish counts as 1 pack.
+          </p>
+        </div>
+
+        {/* Top Quick-Advance Action (no need to scroll to the bottom!) */}
+        {mainItemsCount > 0 && (
+          <button
+            type="button"
+            onClick={onContinue}
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-full bg-brand-green hover:bg-brand-green-hover text-white font-heading font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all shrink-0 active:scale-95 animate-fadeIn"
+          >
+            <span>Next: Add Drinks & Sides →</span>
+          </button>
+        )}
       </div>
 
       {/* Category Segmented Control */}
       <div className="flex flex-wrap gap-2 p-1.5 bg-stone-100 rounded-2xl border border-brand-border">
         {[
-          { id: "combos", label: "Popular Combos", icon: Sparkles },
+          { id: "combos", label: "Popular Combos", icon: Star },
           { id: "rice", label: "Rice Dishes", icon: Utensils },
           { id: "grills", label: "Pepper Soups & Grills", icon: Flame },
           { id: "swallow-soup", label: "Custom Swallow + Soup", icon: Utensils },
@@ -78,9 +91,9 @@ export function Step1Main({ onContinue }: Step1MainProps) {
       {activeTab === "combos" && (
         <div className="space-y-3">
           <div className="bg-amber-50/70 border border-amber-200/80 p-3 rounded-xl text-xs text-amber-900 flex items-center gap-2">
-            <Sparkles className="w-4 h-4 text-brand-orange shrink-0" />
+            <Star className="w-4 h-4 text-brand-orange shrink-0 fill-current" />
             <span>
-              <strong>Convenience shortcuts:</strong> Swallow + Soup combined in 1 pack. You can still add meats and sides in Step 2!
+              <strong>Convenience shortcuts:</strong> Swallow + Soup combined in 1 pack. You can still add meats, drinks, and sides in Step 2!
             </span>
           </div>
 

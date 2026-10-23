@@ -30,73 +30,79 @@ export function Logo({
 
   return (
     <div className={`flex items-center gap-2.5 sm:gap-3 select-none ${className}`}>
-      {/* Vector Culinary Emblem */}
+      {/* Pure Inner Culinary Pot Emblem */}
       <div
-        className={`${iconSizes[size]} shrink-0 rounded-2xl bg-gradient-to-br from-[#127F3F] via-[#0F7B3C] to-[#084C24] p-1.5 shadow-sm transition-transform duration-300 group-hover:scale-105 flex items-center justify-center border border-emerald-400/30`}
+        className={`${iconSizes[size]} shrink-0 transition-transform duration-300 group-hover:scale-105 flex items-center justify-center`}
       >
         <svg
           viewBox="0 0 48 48"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
-          className="w-full h-full"
+          className="w-full h-full drop-shadow-sm"
         >
-          {/* Steam curls */}
+          {/* Steam curls in gold */}
           <path
-            d="M18 9 C16 12, 20 13, 18 16"
-            stroke="#F5C518"
-            strokeWidth="1.8"
-            strokeLinecap="round"
-            opacity="0.85"
-          />
-          <path
-            d="M24 7 C22 10, 26 12, 24 15"
-            stroke="#F5C518"
+            d="M18 7 C16 10, 20 12, 18 15"
+            stroke="#F59E0B"
             strokeWidth="2.2"
             strokeLinecap="round"
           />
           <path
-            d="M30 9 C28 12, 32 13, 30 16"
+            d="M24 5 C22 8, 26 11, 24 14"
             stroke="#F5C518"
-            strokeWidth="1.8"
+            strokeWidth="2.6"
             strokeLinecap="round"
-            opacity="0.85"
+          />
+          <path
+            d="M30 7 C28 10, 32 12, 30 15"
+            stroke="#F59E0B"
+            strokeWidth="2.2"
+            strokeLinecap="round"
           />
 
           {/* Pot Rim */}
-          <ellipse cx="24" cy="20" rx="14" ry="3" fill="#F8F5F0" />
-          <ellipse cx="24" cy="20" rx="12" ry="2" fill="#E5E0D8" />
+          <ellipse cx="24" cy="18" rx="16" ry="4" fill="#0F7B3C" />
+          <ellipse cx="24" cy="18" rx="14" ry="2.8" fill="#148342" />
 
-          {/* Pot Body */}
+          {/* Pot Main Body in Rich Palm Green */}
           <path
-            d="M10 20 C10 30, 15 37, 24 37 C33 37, 38 30, 38 20 Z"
-            fill="#FFFFFF"
+            d="M9 18 C9 31, 14 39, 24 39 C34 39, 39 31, 39 18 Z"
+            fill="url(#innerPotGrad)"
           />
 
-          {/* Handles */}
+          {/* Golden Handles */}
           <path
-            d="M9 23 C6 23, 6 28, 9 28"
-            stroke="#FFFFFF"
-            strokeWidth="2"
+            d="M8 21 C4 21, 4 27, 8 27"
+            stroke="#F5C518"
+            strokeWidth="2.5"
             strokeLinecap="round"
           />
           <path
-            d="M39 23 C42 23, 42 28, 39 28"
-            stroke="#FFFFFF"
-            strokeWidth="2"
+            d="M40 21 C44 21, 44 27, 40 27"
+            stroke="#F5C518"
+            strokeWidth="2.5"
             strokeLinecap="round"
           />
 
-          {/* Naija "N" Monogram */}
+          {/* Inner Naija 'N' Monogram */}
           <path
-            d="M20 25.5 V32 M20 26.5 L28 32 M28 25.5 V32"
-            stroke="#0F7B3C"
-            strokeWidth="2.2"
+            d="M19 24.5 V33 M19 25.5 L29 33 M29 24.5 V33"
+            stroke="#FFFFFF"
+            strokeWidth="2.8"
             strokeLinecap="round"
             strokeLinejoin="round"
           />
 
-          {/* Gold Sparkle / Base Accent */}
-          <circle cx="24" cy="42" r="2" fill="#F5C518" />
+          {/* Base Flame Accent */}
+          <circle cx="24" cy="44" r="2" fill="#F26A1B" />
+
+          <defs>
+            <linearGradient id="innerPotGrad" x1="9" y1="18" x2="39" y2="39" gradientUnits="userSpaceOnUse">
+              <stop stopColor="#0F7B3C" />
+              <stop offset="0.5" stopColor="#0A5B2C" />
+              <stop offset="1" stopColor="#074420" />
+            </linearGradient>
+          </defs>
         </svg>
       </div>
 

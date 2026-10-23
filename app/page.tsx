@@ -5,7 +5,6 @@ import Link from "next/link";
 import Image from "next/image";
 import { motion, useReducedMotion } from "framer-motion";
 import {
-  Sparkles,
   ArrowRight,
   Clock,
   ShieldCheck,
@@ -71,7 +70,7 @@ export default function HomePage() {
                   href="/order"
                   className="w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-gradient-to-r from-brand-green via-[#0F7B3C] to-[#0C6331] hover:from-[#0C6331] hover:to-[#084822] text-white font-heading font-extrabold text-base px-9 py-4 rounded-full shadow-lg hover:shadow-xl transition-all active:scale-95 group"
                 >
-                  <Sparkles className="w-5 h-5 text-brand-gold group-hover:rotate-12 transition-transform" />
+                  <Utensils className="w-5 h-5 text-brand-gold group-hover:rotate-12 transition-transform" />
                   <span>Order Now</span>
                   <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                 </Link>

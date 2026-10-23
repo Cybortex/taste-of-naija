@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import Image from "next/image";
-import { Utensils, Sparkles, Flame } from "lucide-react";
+import { Utensils, Flame } from "lucide-react";
 
 interface DishImageProps {
   slug: string;
@@ -87,7 +87,6 @@ export function DishImage({
 
             {category && (
               <span className="mt-1 inline-flex items-center gap-1 text-[11px] font-medium text-emerald-200 uppercase tracking-wider bg-black/20 px-2 py-0.5 rounded-full border border-white/10">
-                <Sparkles className="w-3 h-3 text-brand-gold" />
                 {category}
               </span>
             )}

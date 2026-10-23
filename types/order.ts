@@ -56,4 +56,20 @@ export interface Order {
   customer: CustomerDetails;
   paymentMethod: "paystack" | "pay_at_restaurant";
   paymentReference?: string;
+  paymentStatus?: "paid" | "pending" | "failed";
+}
+
+export interface TransactionRecord {
+  id: string;
+  orderId: string;
+  reference: string;
+  amount: number;
+  currency: string;
+  channel: "card" | "bank" | "ussd" | "qr" | "pay_on_arrival" | "paystack_inline";
+  status: "success" | "pending" | "failed";
+  paidAt: string;
+  customerName: string;
+  customerPhone: string;
+  customerEmail: string;
+  orderType: OrderType;
 }

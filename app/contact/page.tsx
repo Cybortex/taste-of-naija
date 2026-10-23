@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from "react";
-import { MapPin, Phone, Mail, Clock, MessageSquare, Check, Sparkles } from "lucide-react";
+import { MapPin, Phone, Mail, Clock, MessageSquare, Check } from "lucide-react";
 
 export default function ContactPage() {
   const [submitted, setSubmitted] = useState(false);
@@ -67,13 +67,18 @@ export default function ContactPage() {
                   <Phone className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="font-bold block">Phone & WhatsApp</span>
-                  <span className="text-brand-muted leading-relaxed block">
-                    +234 812 345 6789 (Front Desk)
-                  </span>
-                  <span className="text-brand-muted leading-relaxed block">
-                    +234 809 876 5432 (Dispatch & Delivery)
-                  </span>
+                  <span className="font-bold block">Helpline & Custom Orders</span>
+                  <a href="tel:09071649725" className="text-brand-green font-bold leading-relaxed block hover:underline">
+                    09071649725 (Call for Custom Orders)
+                  </a>
+                  <a
+                    href="https://wa.me/2349071649725"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-brand-muted leading-relaxed block hover:text-brand-green"
+                  >
+                    WhatsApp: 09071649725
+                  </a>
                 </div>
               </div>
 

@@ -18,7 +18,7 @@ export function Footer() {
             </p>
             <div className="flex items-center gap-2 text-xs text-brand-gold font-medium bg-black/20 p-2.5 rounded-lg border border-white/5">
               <ShieldCheck className="w-4 h-4 text-brand-accent shrink-0" />
-              <span>Certified Fresh Ingredients • 100% Halal Meats</span>
+              <span>Certified Fresh Ingredients • Authentic Recipes</span>
             </div>
           </div>
 
@@ -97,6 +97,12 @@ export function Footer() {
                   Contact & Table Reservations
                 </Link>
               </li>
+              <li className="pt-2 border-t border-emerald-800/50">
+                <Link href="/admin" className="text-brand-gold hover:underline font-semibold flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-brand-gold animate-pulse" />
+                  <span>Admin & Operations Portal</span>
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -112,7 +118,20 @@ export function Footer() {
               </div>
               <div className="flex items-center gap-2.5">
                 <Phone className="w-4 h-4 text-brand-gold shrink-0" />
-                <span>+234 812 345 6789 / +234 809 876 5432</span>
+                <a href="tel:09071649725" className="hover:text-white transition-colors">
+                  Helpline / Custom Orders: 09071649725
+                </a>
+              </div>
+              <div className="flex items-center gap-2.5">
+                <span className="text-emerald-400 font-bold text-xs uppercase bg-emerald-950/80 px-2 py-0.5 rounded border border-emerald-800">WhatsApp</span>
+                <a
+                  href="https://wa.me/2349071649725"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="hover:text-white transition-colors"
+                >
+                  09071649725
+                </a>
               </div>
               <div className="flex items-center gap-2.5">
                 <Mail className="w-4 h-4 text-brand-gold shrink-0" />

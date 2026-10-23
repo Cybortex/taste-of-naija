@@ -5,7 +5,8 @@ export type CategoryId =
   | "rice"
   | "grills"
   | "proteins"
-  | "sides";
+  | "sides"
+  | "drinks";
 
 export interface MenuItem {
   id: string;

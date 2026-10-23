@@ -10,7 +10,6 @@ import {
   X,
   Phone,
   Clock,
-  Sparkles,
   ArrowRight,
   Flame,
   UtensilsCrossed,
@@ -52,10 +51,14 @@ export function Header() {
               <Clock className="w-3.5 h-3.5 text-brand-gold" />
               Mon - Sun: 11:00 AM – 10:00 PM
             </span>
-            <span className="flex items-center gap-1.5">
+            <a
+              href="tel:09071649725"
+              className="flex items-center gap-1.5 hover:text-white transition-colors"
+              title="Call Helpline for Custom Orders"
+            >
               <Phone className="w-3.5 h-3.5 text-brand-gold" />
-              +234 812 345 6789
-            </span>
+              Helpline / Custom Orders: 09071649725
+            </a>
           </div>
         </div>
       </div>
@@ -101,7 +104,7 @@ export function Header() {
               href="/order"
               className="inline-flex items-center gap-2 bg-gradient-to-r from-brand-green to-[#0C6933] hover:from-[#0C6933] hover:to-[#094F26] text-white text-xs sm:text-sm font-heading font-extrabold py-2.5 sm:py-3 px-4 sm:px-6 rounded-full shadow-md hover:shadow-lg transition-all active:scale-95 group"
             >
-              <Sparkles className="w-4 h-4 text-brand-gold group-hover:rotate-12 transition-transform" />
+              <UtensilsCrossed className="w-4 h-4 text-brand-gold group-hover:rotate-12 transition-transform" />
               <span>Order Now</span>
             </Link>
 
@@ -160,7 +163,7 @@ export function Header() {
                 className="w-full flex items-center justify-between p-3.5 rounded-2xl bg-brand-green text-white font-heading font-extrabold text-sm shadow-md"
               >
                 <div className="flex items-center gap-2.5">
-                  <Sparkles className="w-4 h-4 text-brand-gold" />
+                  <UtensilsCrossed className="w-4 h-4 text-brand-gold" />
                   <span>Start 3-Step Order</span>
                 </div>
                 <ArrowRight className="w-4 h-4" />
@@ -199,7 +202,9 @@ export function Header() {
                 </div>
                 <div className="flex items-center gap-2">
                   <Phone className="w-3.5 h-3.5 text-brand-green" />
-                  <span>Customer Support: +234 812 345 6789</span>
+                  <a href="tel:09071649725" className="hover:underline">
+                    Helpline / Custom Orders: 09071649725
+                  </a>
                 </div>
               </div>
             </motion.div>

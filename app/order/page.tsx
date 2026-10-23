@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { Utensils, Sparkles, CheckCircle2, ShoppingBag } from "lucide-react";
+import { Utensils, CheckCircle2, ShoppingBag } from "lucide-react";
 import { Step1Main } from "@/components/order/Step1Main";
 import { Step2Addons } from "@/components/order/Step2Addons";
 import { Step3Checkout } from "@/components/order/Step3Checkout";

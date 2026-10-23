@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
-import { Plus, Flame, Sparkles, ArrowLeft, Check } from "lucide-react";
-import { PROTEINS, SIDES } from "@/data/menu";
+import { Plus, Flame, ArrowLeft, Check, CupSoda } from "lucide-react";
+import { PROTEINS, SIDES, DRINKS } from "@/data/menu";
 import { MenuItem } from "@/types/menu";
 import { formatPrice } from "@/lib/utils";
 import { QuantityStepper } from "@/components/ui/QuantityStepper";
@@ -46,16 +46,38 @@ export function Step2Addons({ onBack, onContinue }: Step2AddonsProps) {
 
   return (
     <div className="space-y-8">
-      <div>
-        <span className="text-xs font-bold text-brand-green uppercase tracking-wider bg-brand-green/10 px-2.5 py-1 rounded-full">
-          Step 2 of 3
-        </span>
-        <h2 className="font-heading font-black text-2xl sm:text-3xl text-brand-deep mt-2">
-          Add Meats, Seafood & Sides
-        </h2>
-        <p className="text-brand-muted text-sm mt-1">
-          Complete your plate! Proteins and sides are never charged pack fees.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-xs font-bold text-brand-green uppercase tracking-wider bg-brand-green/10 px-2.5 py-1 rounded-full">
+            Step 2 of 3
+          </span>
+          <h2 className="font-heading font-black text-2xl sm:text-3xl text-brand-deep mt-2">
+            Add Drinks, Meats & Sides
+          </h2>
+          <p className="text-brand-muted text-sm mt-1">
+            Complete your plate! Proteins, sides, and drinks are never charged pack fees.
+          </p>
+        </div>
+
+        {/* Top Navigation Shortcuts (so user doesn't have to scroll to the bottom!) */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-brand-border bg-white text-brand-deep font-semibold text-xs hover:bg-stone-50 transition-colors shadow-2xs"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back</span>
+          </button>
+
+          <button
+            type="button"
+            onClick={onContinue}
+            className="inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-full bg-brand-green hover:bg-brand-green-hover text-white font-heading font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all active:scale-95"
+          >
+            <span>Proceed to Checkout →</span>
+          </button>
+        </div>
       </div>
 
       {/* Spice Level Selector (Conditioned on soups/grills presence) */}
@@ -234,11 +256,78 @@ export function Step2Addons({ onBack, onContinue }: Step2AddonsProps) {
         </div>
       </div>
 
+      {/* Chilled Drinks & Beverages Section */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="font-heading font-bold text-lg text-brand-deep flex items-center gap-2">
+            <CupSoda className="w-5 h-5 text-brand-green" />
+            <span>Chilled Drinks & Refreshments</span>
+          </h3>
+          <span className="text-xs text-brand-green font-medium">Ice cold</span>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+          {DRINKS.map((drink) => {
+            const qty = getItemQuantity(drink.id);
+            const cartItem = items.find((i) => i.itemId === drink.id);
+
+            return (
+              <div
+                key={drink.id}
+                className={`p-3.5 rounded-card border transition-all flex flex-col justify-between ${
+                  qty > 0
+                    ? "bg-brand-cream border-brand-green ring-1 ring-brand-green/30"
+                    : "bg-white border-brand-border hover:border-brand-green/40 shadow-xs"
+                }`}
+              >
+                <div>
+                  <div className="font-heading font-bold text-brand-deep text-sm">
+                    {drink.name}
+                  </div>
+                  <div className="text-xs font-bold text-brand-green mt-0.5">
+                    {formatPrice(drink.price)}
+                    <span className="text-[10px] text-brand-muted font-normal ml-1">({drink.unit})</span>
+                  </div>
+                  <div className="text-[11px] text-brand-muted mt-1 line-clamp-2">
+                    {drink.description}
+                  </div>
+                </div>
+
+                <div className="mt-3 pt-2.5 border-t border-brand-border/40 flex items-center justify-between">
+                  <span className="text-[11px] text-brand-muted">
+                    {qty > 0 ? `${qty} in order` : "Add"}
+                  </span>
+
+                  {qty > 0 ? (
+                    <QuantityStepper
+                      size="sm"
+                      value={qty}
+                      onIncrement={() => cartItem && updateQuantity(cartItem.id, 1)}
+                      onDecrement={() => cartItem && updateQuantity(cartItem.id, -1)}
+                      itemName={drink.name}
+                    />
+                  ) : (
+                    <button
+                      type="button"
+                      onClick={() => handleToggleOrAdd(drink)}
+                      className="px-2.5 py-1 rounded-btn bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-semibold flex items-center gap-1 shadow-2xs"
+                    >
+                      <Plus className="w-3.5 h-3.5 stroke-[2.5]" />
+                      <span>Add</span>
+                    </button>
+                  )}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+
       {/* Smart Pairing Suggestion */}
       <div className="p-4 rounded-card bg-emerald-50/70 border border-emerald-200/80 flex items-center gap-3">
-        <Sparkles className="w-5 h-5 text-brand-gold shrink-0" />
+        <Check className="w-5 h-5 text-brand-green shrink-0 stroke-[2.5]" />
         <p className="text-xs sm:text-sm text-emerald-950">
-          <strong>Tip from Chef:</strong> Don’t forget sweet golden <strong>Dodo</strong> and tender <strong>Fried Chicken</strong> — the quintessential pairing for every rice and swallow plate!
+          <strong>Tip from Chef:</strong> Don’t forget sweet golden <strong>Dodo</strong>, tender <strong>Fried Chicken</strong>, and ice-cold <strong>Chilled Zobo</strong> or <strong>Chapman</strong> — the quintessential combo for every rich Nigerian meal!
         </p>
       </div>
 

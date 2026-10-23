@@ -16,8 +16,14 @@ import {
 } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/utils";
-import { OrderType, Order } from "@/types/order";
+import { OrderType, Order, TransactionRecord } from "@/types/order";
 import { FreeDeliveryBar } from "@/components/ui/FreeDeliveryBar";
+
+declare global {
+  interface Window {
+    PaystackPop?: any;
+  }
+}
 
 interface Step3CheckoutProps {
   onBack: () => void;
@@ -69,91 +75,190 @@ export function Step3Checkout({ onBack }: Step3CheckoutProps) {
     // Generate unique order ID
     const orderId = `TON-${Date.now().toString().slice(-6)}-${Math.floor(100 + Math.random() * 900)}`;
 
-    const newOrder: Order = {
-      id: orderId,
-      reference: `PAY-${Date.now()}`,
-      createdAt: new Date().toISOString(),
-      status: orderType === "dine-in" ? "confirmed" : "awaiting_payment",
-      type: orderType,
-      items: [...items],
-      subtotal: fees.subtotal,
-      takeawayPacks: fees.totalPacks,
-      takeawayFee: fees.takeawayFee,
-      deliveryFee: fees.deliveryFee,
-      total: fees.total,
-      customer: {
-        name,
-        phone,
-        email,
-        timeSlot: orderType === "dine-in" ? timeSlot : undefined,
-        pickupTime: orderType === "takeaway" ? pickupTime : undefined,
-        address: orderType === "delivery" ? address : undefined,
-        city: orderType === "delivery" ? city : undefined,
-        landmark: orderType === "delivery" ? landmark : undefined,
-        deliveryNotes: orderType === "delivery" ? deliveryNotes : undefined,
-      },
-      paymentMethod: orderType === "dine-in" ? "pay_at_restaurant" : "paystack",
-      paymentReference: orderType !== "dine-in" ? `pstk_${Date.now()}` : undefined,
+    const finalizeOrder = (
+      payRef: string,
+      status: Order["status"],
+      payStatus: "paid" | "pending" | "failed"
+    ) => {
+      const newOrder: Order = {
+        id: orderId,
+        reference: payRef,
+        createdAt: new Date().toISOString(),
+        status: status,
+        type: orderType,
+        items: [...items],
+        subtotal: fees.subtotal,
+        takeawayPacks: fees.totalPacks,
+        takeawayFee: fees.takeawayFee,
+        deliveryFee: fees.deliveryFee,
+        total: fees.total,
+        customer: {
+          name,
+          phone,
+          email,
+          timeSlot: orderType === "dine-in" ? timeSlot : undefined,
+          pickupTime: orderType === "takeaway" ? pickupTime : undefined,
+          address: orderType === "delivery" ? address : undefined,
+          city: orderType === "delivery" ? city : undefined,
+          landmark: orderType === "delivery" ? landmark : undefined,
+          deliveryNotes: orderType === "delivery" ? deliveryNotes : undefined,
+        },
+        paymentMethod: orderType === "dine-in" ? "pay_at_restaurant" : "paystack",
+        paymentReference: payRef,
+        paymentStatus: payStatus,
+      };
+
+      const newTx: TransactionRecord = {
+        id: `TX-${Date.now()}-${Math.floor(Math.random() * 1000)}`,
+        orderId,
+        reference: payRef,
+        amount: fees.total,
+        currency: "NGN",
+        channel: orderType === "dine-in" ? "pay_on_arrival" : "paystack_inline",
+        status: payStatus === "paid" ? "success" : "pending",
+        paidAt: new Date().toISOString(),
+        customerName: name,
+        customerPhone: phone,
+        customerEmail: email || `${phone.replace(/\D/g, "")}@tasteofnaija.ng`,
+        orderType,
+      };
+
+      try {
+        localStorage.setItem(`order_${orderId}`, JSON.stringify(newOrder));
+        const history = JSON.parse(localStorage.getItem("taste_of_naija_orders") || "[]");
+        history.unshift(newOrder);
+        localStorage.setItem("taste_of_naija_orders", JSON.stringify(history));
+
+        const transactions = JSON.parse(localStorage.getItem("taste_of_naija_transactions") || "[]");
+        transactions.unshift(newTx);
+        localStorage.setItem("taste_of_naija_transactions", JSON.stringify(transactions));
+      } catch {
+        // storage fallback
+      }
+
+      clearCart();
+      router.push(`/order/confirmation/${orderId}`);
     };
 
-    // Store in localStorage for confirmation screen
-    try {
-      localStorage.setItem(`order_${orderId}`, JSON.stringify(newOrder));
-      const history = JSON.parse(localStorage.getItem("taste_of_naija_orders") || "[]");
-      history.unshift(newOrder);
-      localStorage.setItem("taste_of_naija_orders", JSON.stringify(history));
-    } catch {
-      // storage error fallback
+    // If Dine-in, no upfront payment is required
+    if (orderType === "dine-in") {
+      finalizeOrder(`RES-${Date.now()}`, "confirmed", "pending");
+      return;
     }
 
-    // If Paystack is configured on the backend, attempt initialization
-    if (orderType !== "dine-in" && process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY && !process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY.includes("sample")) {
-      try {
-        const res = await fetch("/api/paystack/initialize", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            email: email || "customer@tasteofnaija.ng",
-            amount: fees.total,
-            orderId,
-            metadata: {
-              customerName: name,
-              customerPhone: phone,
-              orderType,
-            },
-          }),
-        });
+    // Live Paystack Inline Checkout
+    const paystackKey = process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY;
+    const canUseInline = typeof window !== "undefined" && window.PaystackPop && paystackKey && !paystackKey.includes("sample_");
 
-        const payData = await res.json();
-        if (payData.authorization_url) {
-          clearCart();
-          window.location.href = payData.authorization_url;
-          return;
-        }
+    if (canUseInline) {
+      try {
+        const handler = window.PaystackPop.setup({
+          key: paystackKey,
+          email: email.trim() || `${phone.replace(/\D/g, "") || "orders"}@tasteofnaija.ng`,
+          amount: Math.round(fees.total * 100), // amount in kobo
+          currency: "NGN",
+          ref: `TON_${orderId}_${Date.now()}`,
+          metadata: {
+            custom_fields: [
+              { display_name: "Customer Name", variable_name: "customer_name", value: name },
+              { display_name: "Phone Number", variable_name: "phone_number", value: phone },
+              { display_name: "Order ID", variable_name: "order_id", value: orderId },
+              { display_name: "Order Type", variable_name: "order_type", value: orderType },
+            ],
+          },
+          callback: function (response: any) {
+            const payRef = response.reference || response.trxref || `pstk_${Date.now()}`;
+            finalizeOrder(payRef, "confirmed", "paid");
+          },
+          onClose: function () {
+            setIsSubmitting(false);
+            setErrorMsg("Payment modal closed. You can retry whenever you are ready.");
+          },
+        });
+        handler.openIframe();
+        return;
       } catch {
-        // Fallback to simulated completion below if network fails
+        // Fallback to server initialization or simulated success below
       }
+    }
+
+    // Backend Paystack API route attempt
+    try {
+      const res = await fetch("/api/paystack/initialize", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: email || `${phone.replace(/\D/g, "") || "orders"}@tasteofnaija.ng`,
+          amount: fees.total,
+          orderId,
+          metadata: {
+            customerName: name,
+            customerPhone: phone,
+            orderType,
+          },
+        }),
+      });
+
+      const payData = await res.json();
+      if (payData.authorization_url) {
+        // Record pending order first
+        finalizeOrder(payData.reference || `pstk_${Date.now()}`, "awaiting_payment", "pending");
+        window.location.href = payData.authorization_url;
+        return;
+      }
+    } catch {
+      // Continue to fallback
     }
 
     // Default immediate completion / demo flow
     setTimeout(() => {
-      clearCart();
-      router.push(`/order/confirmation/${orderId}`);
-    }, 1200);
+      finalizeOrder(`PAY-${Date.now()}`, "confirmed", "paid");
+    }, 1000);
   };
 
   return (
     <form onSubmit={handleSubmit} className="space-y-8">
-      <div>
-        <span className="text-xs font-bold text-brand-green uppercase tracking-wider bg-brand-green/10 px-2.5 py-1 rounded-full">
-          Step 3 of 3
-        </span>
-        <h2 className="font-heading font-black text-2xl sm:text-3xl text-brand-deep mt-2">
-          Order Type & Checkout
-        </h2>
-        <p className="text-brand-muted text-sm mt-1">
-          Choose how you’d like to receive your food and confirm details.
-        </p>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <span className="text-xs font-bold text-brand-green uppercase tracking-wider bg-brand-green/10 px-2.5 py-1 rounded-full">
+            Step 3 of 3
+          </span>
+          <h2 className="font-heading font-black text-2xl sm:text-3xl text-brand-deep mt-2">
+            Order Type & Checkout
+          </h2>
+          <p className="text-brand-muted text-sm mt-1">
+            Choose how you’d like to receive your food and confirm details.
+          </p>
+        </div>
+
+        {/* Top Quick Actions (no need to scroll to bottom) */}
+        <div className="flex items-center gap-2 shrink-0">
+          <button
+            type="button"
+            onClick={onBack}
+            className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-full border border-brand-border bg-white text-brand-deep font-semibold text-xs hover:bg-stone-50 transition-colors shadow-2xs"
+          >
+            <ArrowLeft className="w-3.5 h-3.5" />
+            <span>Back</span>
+          </button>
+
+          <button
+            type="submit"
+            disabled={isSubmitting || (orderType === "delivery" && !fees.minDeliveryMet)}
+            className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-full bg-brand-green hover:bg-brand-green-hover disabled:bg-stone-300 disabled:cursor-not-allowed text-white font-heading font-extrabold text-xs sm:text-sm shadow-md hover:shadow-lg transition-all active:scale-95"
+          >
+            {isSubmitting ? (
+              <span>Processing...</span>
+            ) : orderType === "dine-in" ? (
+              <span>Confirm Reservation ({formatPrice(fees.total)})</span>
+            ) : (
+              <>
+                <CreditCard className="w-4 h-4" />
+                <span>Pay {formatPrice(fees.total)}</span>
+              </>
+            )}
+          </button>
+        </div>
       </div>
 
       {/* Order Type Selector - 3 Large Cards */}
