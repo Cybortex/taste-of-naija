@@ -21,7 +21,7 @@ export default function CartPage() {
           Your Cart is Empty
         </h1>
         <p className="text-sm text-brand-muted max-w-sm mx-auto">
-          You haven’t added any dishes yet. Browse our full buka menu to get started.
+          You haven’t added any dishes yet. Browse our full Taste of Naija menu to get started.
         </p>
         <div className="pt-2">
           <Link

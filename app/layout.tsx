@@ -23,7 +23,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Taste of Naija Kitchen" }],
   openGraph: {
     title: "Taste of Naija — Real Nigerian Food, Made With Pride",
-    description: "Authentic buka flavour with modern online ordering. Dine-in, Takeaway & Home Delivery.",
+    description: "Authentic Nigerian culinary heritage with modern online ordering. Dine-in, Takeaway & Home Delivery.",
     url: "https://tasteofnaija.ng",
     siteName: "Taste of Naija",
     locale: "en_NG",

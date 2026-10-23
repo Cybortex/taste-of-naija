@@ -72,9 +72,9 @@ const GALLERY_ITEMS: GalleryImage[] = [
   },
   {
     id: "kitchen-2",
-    title: "Traditional Buka Heritage Kitchen",
+    title: "Traditional Taste of Naija Kitchen",
     category: "kitchen",
-    caption: "Chefs preparing fresh batches of daily buka soups and swallows with love.",
+    caption: "Chefs preparing fresh batches of daily Nigerian soups and swallows with love.",
     imageUrl: "/images/site/about-kitchen-1.jpg",
   },
 ];

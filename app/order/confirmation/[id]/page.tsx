@@ -104,8 +104,8 @@ export default function OrderConfirmationPage({ params }: ConfirmationPageProps)
       return [
         { key: "confirmed", label: "Order Accepted", sub: "Sent to kitchen" },
         { key: "preparing", label: "Cooking & Packing", sub: "Packed in hygienic bowls" },
-        { key: "ready", label: "Ready for Pickup", sub: "Collect at Buka counter" },
-        { key: "completed", label: "Collected", sub: "Enjoy your buka meal" },
+        { key: "ready", label: "Ready for Pickup", sub: "Collect at kitchen counter" },
+        { key: "completed", label: "Collected", sub: "Enjoy your Taste of Naija meal" },
       ];
     }
     // Delivery

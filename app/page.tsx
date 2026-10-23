@@ -55,7 +55,7 @@ export default function HomePage() {
 
               <p className="text-brand-muted text-base sm:text-lg max-w-2xl mx-auto lg:mx-0 leading-relaxed font-body">
                 From our seasoned firewood pots straight to your table. Experience authentic
-                buka recipes with modern convenience — hot swallows, rich native soups, smoky party
+                Nigerian recipes with modern convenience — hot swallows, rich native soups, smoky party
                 jollof, and charcoal suya grilled to perfection.
               </p>
 
@@ -85,7 +85,7 @@ export default function HomePage() {
                     100% Real
                   </div>
                   <div className="text-[11px] text-brand-muted leading-tight mt-0.5">
-                    Authentic buka firewood flavours
+                    Authentic slow-cooked Nigerian flavours
                   </div>
                 </div>
 
@@ -271,7 +271,7 @@ export default function HomePage() {
               Crowd Favourites
             </span>
             <h2 className="font-heading font-black text-2xl sm:text-4xl text-brand-deep mt-2">
-              Popular Buka Combos
+              Popular Taste of Naija Combos
             </h2>
             <p className="text-sm text-brand-muted mt-1">
               Complete swallow and soup pairings ready in a single click.
@@ -327,7 +327,7 @@ export default function HomePage() {
         </div>
       </section>
 
-      {/* Buka Heritage Story Callout Banner */}
+      {/* Taste of Naija Heritage Story Callout Banner */}
       <section className="max-w-[1200px] mx-auto px-4 sm:px-6">
         <div className="bg-[#0A4823] rounded-3xl p-8 sm:p-12 text-white relative overflow-hidden shadow-xl">
           <div
@@ -343,7 +343,7 @@ export default function HomePage() {
               Our Food Philosophy
             </span>
             <h2 className="font-heading font-black text-3xl sm:text-4xl leading-tight">
-              “Buka flavour, modern convenience.”
+              “Real Nigerian food, made with pride.”
             </h2>
             <p className="text-emerald-100/90 text-sm sm:text-base leading-relaxed">
               We started Taste of Naija with one uncompromising promise: never cut corners on the

@@ -28,7 +28,7 @@ const FAQS: FAQItem[] = [
   {
     question: "Can I adjust the spice level of my food?",
     answer:
-      "Yes! When you build your order in Step 2, you can choose between Mild Pepper (gentle heat with deep flavour), Medium (our standard authentic buka heat), and Hot & Fiery (for seasoned pepper lovers).",
+      "Yes! When you build your order in Step 2, you can choose between Mild Pepper (gentle heat with deep flavour), Medium (our signature authentic Naija heat), and Hot & Fiery (for seasoned pepper lovers).",
   },
   {
     question: "Do I have to pay online if I am dining in?",

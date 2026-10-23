@@ -128,7 +128,7 @@ export function CartDrawer() {
                     Your cart is empty
                   </h3>
                   <p className="text-sm text-brand-muted max-w-[240px] mb-6">
-                    Wetin you wan order? Browse our buka favourites and start your order.
+                    Wetin you wan order? Browse our Taste of Naija favourites and start your order.
                   </p>
                   <Link
                     href="/menu"

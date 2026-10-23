@@ -74,7 +74,7 @@ export function Step2Addons({ onBack, onContinue }: Step2AddonsProps) {
           <div className="grid grid-cols-3 gap-2.5 max-w-md">
             {[
               { level: "Mild", label: "Mild Pepper", desc: "Gentle heat, full flavour" },
-              { level: "Medium", label: "Medium (Standard)", desc: "Authentic buka kick" },
+              { level: "Medium", label: "Medium (Standard)", desc: "Authentic Naija heat" },
               { level: "Hot", label: "Hot & Fiery", desc: "For real pepper lovers" },
             ].map(({ level, label, desc }) => (
               <button

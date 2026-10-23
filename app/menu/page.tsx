@@ -57,7 +57,7 @@ function MenuContent() {
       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-brand-border/70 pb-6">
         <div>
           <span className="text-xs font-bold text-brand-green uppercase tracking-wider bg-brand-green/10 px-3 py-1 rounded-full">
-            Complete Buka Menu
+            Complete Restaurant Menu
           </span>
           <h1 className="font-heading font-black text-3xl sm:text-5xl text-brand-deep mt-2">
             Taste of Naija Menu

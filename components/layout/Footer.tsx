@@ -18,7 +18,7 @@ export function Footer() {
               </span>
             </div>
             <p className="text-sm text-emerald-200/80 leading-relaxed">
-              Real Nigerian food, made with pride. From our pot to your table — experience the authentic buka flavours of Lagos, Ibadan, and Calabar with modern ordering convenience.
+              Real Nigerian food, made with pride. From our pot to your table — experience the authentic rich flavours of Lagos, Ibadan, and Calabar with modern ordering convenience.
             </p>
             <div className="flex items-center gap-2 text-xs text-brand-gold font-medium bg-black/20 p-2.5 rounded-lg border border-white/5">
               <ShieldCheck className="w-4 h-4 text-brand-accent shrink-0" />

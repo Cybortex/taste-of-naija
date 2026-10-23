@@ -221,7 +221,7 @@ export default function DishDetailPage({ params }: DishDetailPageProps) {
               <span>•</span>
               <span className="flex items-center gap-1">
                 <ShieldCheck className="w-3.5 h-3.5 text-brand-green" />
-                100% Authentic Buka Recipe
+                100% Authentic Taste of Naija Recipe
               </span>
             </div>
           </div>

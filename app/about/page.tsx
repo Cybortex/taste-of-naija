@@ -15,8 +15,8 @@ export default function AboutPage() {
           Real Nigerian Food, Made with Pride
         </h1>
         <p className="text-sm sm:text-base text-brand-muted leading-relaxed">
-          The unmistakable aroma of firewood smoke, stone-ground melon seeds, and grandmother’s
-          century-old buka recipes — reimagined for modern Lagos living.
+          The unmistakable aroma of firewood smoke, stone-ground melon seeds, and authentic
+          heritage recipes — cooked with pride for modern Lagos living.
         </p>
       </div>
 
@@ -24,7 +24,7 @@ export default function AboutPage() {
       <div className="relative w-full aspect-[21/9] sm:aspect-[2.4/1] rounded-3xl overflow-hidden shadow-card border border-brand-border">
         <Image
           src="/images/site/about-kitchen-1.jpg"
-          alt="Traditional Nigerian Buka Kitchen"
+          alt="Traditional Nigerian Kitchen at Taste of Naija"
           fill
           priority
           className="object-cover"
@@ -46,18 +46,17 @@ export default function AboutPage() {
             The Beginning
           </span>
           <h2 className="font-heading font-black text-2xl sm:text-3xl text-brand-deep">
-            Born from a Longing for Genuine Buka Taste
+            Born from a Passion for Genuine Nigerian Food
           </h2>
           <p className="text-sm text-brand-muted leading-relaxed">
-            Taste of Naija started with a simple observation: as Lagos became faster, real buka
-            cooking began to disappear behind processed cubes, shortcut thickeners, and lukewarm
-            chafing dishes.
+            Taste of Naija started with a simple belief: real Nigerian cooking must never be compromised.
+            Too often, fast dining cuts corners on quality ingredients, slow simmering, and authentic seasoning.
           </p>
           <p className="text-sm text-brand-muted leading-relaxed">
-            We wanted the raw authenticity of roadside bukaterias — where the pots are massive,
+            We wanted the raw, soulful authenticity of traditional Nigerian home cooking — where the pots are massive,
             the palm oil has that authentic crimson richness from Delta, and the party jollof gets
-            its smoky soul from real hardwood coals. But we wanted it served in a spotless,
-            welcoming dining room and delivered to your doorstep in spill-proof packaging.
+            its smoky soul from real hardwood coals. And we deliver it in a spotless,
+            welcoming dining room or right to your doorstep in spill-proof packaging.
           </p>
         </div>
 

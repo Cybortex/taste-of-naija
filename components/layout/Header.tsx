@@ -32,7 +32,7 @@ export function Header() {
           <div className="flex items-center gap-2">
             <span className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
             <span>
-              Real Nigerian Buka flavour • Hot and ready for Dine-in, Takeaway & Home Delivery
+              Real Nigerian food, made with pride • Hot & fresh for Dine-in, Takeaway & Home Delivery
             </span>
           </div>
 
@@ -62,7 +62,7 @@ export function Header() {
                 Taste of Naija
               </span>
               <span className="text-[10px] sm:text-[11px] text-brand-muted font-medium tracking-wide mt-0.5">
-                Authentic Buka Kitchen
+                Real Nigerian Kitchen
               </span>
             </div>
           </Link>

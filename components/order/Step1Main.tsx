@@ -301,7 +301,7 @@ export function Step1Main({ onContinue }: Step1MainProps) {
       {activeTab === "swallow-soup" && (
         <div className="space-y-6">
           <div className="bg-emerald-50 border border-emerald-200 p-3.5 rounded-xl text-xs text-emerald-900">
-            <strong>Buka Custom Mix:</strong> Pick your swallow and pair it with your soup of choice.
+            <strong>Custom Plate Mix:</strong> Pick your swallow and pair it with your soup of choice.
           </div>
 
           {/* Swallows Section */}
