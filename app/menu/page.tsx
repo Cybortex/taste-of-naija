@@ -1,13 +1,13 @@
 "use client";
 
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { Search, Sparkles, Filter, X, Package, Truck } from "lucide-react";
 import { ALL_MENU_ITEMS, CATEGORIES } from "@/data/menu";
 import { DishCard } from "@/components/menu/DishCard";
 import { formatPrice } from "@/lib/utils";
 
-export default function MenuPage() {
+function MenuContent() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get("category") || "all";
 
@@ -189,5 +189,20 @@ export default function MenuPage() {
         </div>
       )}
     </div>
+  );
+}
+
+export default function MenuPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="max-w-[1200px] mx-auto px-4 py-24 text-center text-brand-muted">
+          <div className="w-10 h-10 border-4 border-brand-green border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-sm font-medium">Loading Taste of Naija Menu...</p>
+        </div>
+      }
+    >
+      <MenuContent />
+    </Suspense>
   );
 }
