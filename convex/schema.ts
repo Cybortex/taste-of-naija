@@ -69,4 +69,18 @@ export default defineSchema({
   })
     .index("by_slug", ["slug"])
     .index("by_category", ["category"]),
+
+  combos: defineTable({
+    comboId: v.string(),
+    name: v.string(),
+    slug: v.string(),
+    description: v.string(),
+    price: v.number(),
+    originalPrice: v.number(),
+    savings: v.number(),
+    items: v.array(v.string()),
+    isPopular: v.optional(v.boolean()),
+    spiceLevel: v.optional(v.string()),
+    image: v.optional(v.string()),
+  }).index("by_slug", ["slug"]),
 });
