@@ -58,7 +58,7 @@ const SAMPLE_ORDERS: Order[] = [
         itemId: "side-dodo",
         name: "Dodo (Fried Plantain)",
         category: "sides",
-        price: 2000,
+        price: 200,
         quantity: 1,
         isPack: false,
       },

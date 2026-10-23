@@ -424,7 +424,7 @@ export const BACKEND_MENU_ITEMS: SeedMenuItem[] = [
     name: "Golden Fried Plantain (Dodo)",
     slug: "dodo",
     category: "sides",
-    price: 800,
+    price: 200,
     unit: "per portion",
     description: "Naturally sweet ripe plantains, sliced into thick diagonal coins and fried until caramelized golden brown.",
     isPack: false,

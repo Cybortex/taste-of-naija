@@ -550,7 +550,7 @@ export const SIDES: MenuItem[] = [
     name: "Dodo (Fried Plantain)",
     slug: "dodo",
     category: "sides",
-    price: 2000,
+    price: 200,
     unit: "per portion",
     description: "Sweet, ripe Nigerian plantains sliced thick and fried until caramelised, golden brown and crispy edged.",
     isPack: false,
