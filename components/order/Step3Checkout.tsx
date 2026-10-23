@@ -40,7 +40,7 @@ export function Step3Checkout({ onBack }: Step3CheckoutProps) {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMsg("");
 
@@ -106,9 +106,37 @@ export function Step3Checkout({ onBack }: Step3CheckoutProps) {
       // storage error fallback
     }
 
-    // Simulate Paystack processing / completion
+    // If Paystack is configured on the backend, attempt initialization
+    if (orderType !== "dine-in" && process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY && !process.env.NEXT_PUBLIC_PAYSTACK_PUBLIC_KEY.includes("sample")) {
+      try {
+        const res = await fetch("/api/paystack/initialize", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            email: email || "customer@tasteofnaija.ng",
+            amount: fees.total,
+            orderId,
+            metadata: {
+              customerName: name,
+              customerPhone: phone,
+              orderType,
+            },
+          }),
+        });
+
+        const payData = await res.json();
+        if (payData.authorization_url) {
+          clearCart();
+          window.location.href = payData.authorization_url;
+          return;
+        }
+      } catch {
+        // Fallback to simulated completion below if network fails
+      }
+    }
+
+    // Default immediate completion / demo flow
     setTimeout(() => {
-      // Clear cart
       clearCart();
       router.push(`/order/confirmation/${orderId}`);
     }, 1200);

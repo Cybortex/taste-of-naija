@@ -18,6 +18,7 @@ interface CartContextType {
   fees: FeeCalculation;
   isCartDrawerOpen: boolean;
   setIsCartDrawerOpen: (open: boolean) => void;
+  isLoaded: boolean;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -145,6 +146,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
         fees,
         isCartDrawerOpen,
         setIsCartDrawerOpen,
+        isLoaded,
       }}
     >
       {children}

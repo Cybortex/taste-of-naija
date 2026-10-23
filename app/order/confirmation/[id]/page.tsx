@@ -31,6 +31,15 @@ export default function OrderConfirmationPage({ params }: ConfirmationPageProps)
       const stored = localStorage.getItem(`order_${resolvedParams.id}`);
       if (stored) {
         setOrder(JSON.parse(stored));
+      } else {
+        const historyStr = localStorage.getItem("taste_of_naija_orders");
+        if (historyStr) {
+          const history = JSON.parse(historyStr);
+          const found = history.find((o: Order) => o.id === resolvedParams.id);
+          if (found) {
+            setOrder(found);
+          }
+        }
       }
     } catch {
       // ignore
@@ -48,56 +57,38 @@ export default function OrderConfirmationPage({ params }: ConfirmationPageProps)
     );
   }
 
-  // Fallback demo order if direct URL accessed
-  const displayOrder: Order = order || {
-    id: resolvedParams.id,
-    reference: `PAY-${Date.now()}`,
-    createdAt: new Date().toISOString(),
-    status: "confirmed",
-    type: "takeaway",
-    items: [
-      {
-        id: "1",
-        itemId: "combo-pounded-yam-egusi",
-        name: "Pounded Yam & Egusi",
-        category: "combos",
-        price: 1400,
-        quantity: 2,
-        isPack: true,
-        selectedSpice: "Medium",
-      },
-      {
-        id: "2",
-        itemId: "protein-fried-chicken",
-        name: "Fried Chicken",
-        category: "proteins",
-        price: 2500,
-        quantity: 1,
-        isPack: false,
-      },
-      {
-        id: "3",
-        itemId: "side-dodo",
-        name: "Dodo (Fried Plantain)",
-        category: "sides",
-        price: 2000,
-        quantity: 1,
-        isPack: false,
-      },
-    ],
-    subtotal: 7300,
-    takeawayPacks: 2,
-    takeawayFee: 500,
-    deliveryFee: 0,
-    total: 7800,
-    customer: {
-      name: "Valued Customer",
-      phone: "+234 812 345 6789",
-      email: "customer@example.com",
-      pickupTime: "In 30 minutes",
-    },
-    paymentMethod: "paystack",
-  };
+  if (!order) {
+    return (
+      <div className="max-w-[600px] mx-auto px-4 py-20 text-center space-y-4">
+        <div className="w-16 h-16 rounded-full bg-brand-cream text-brand-muted flex items-center justify-center mx-auto">
+          <Clock className="w-8 h-8" />
+        </div>
+        <h1 className="font-heading font-black text-2xl text-brand-deep">
+          Order Not Found
+        </h1>
+        <p className="text-sm text-brand-muted">
+          We could not locate an active order with reference ID:{" "}
+          <strong className="text-brand-deep">{resolvedParams.id}</strong>.
+        </p>
+        <div className="pt-4 flex flex-col sm:flex-row items-center justify-center gap-3">
+          <Link
+            href="/order"
+            className="inline-flex items-center gap-2 bg-brand-green text-white font-bold px-6 py-3 rounded-btn text-sm hover:bg-brand-green-hover"
+          >
+            Start New Order
+          </Link>
+          <Link
+            href="/menu"
+            className="inline-flex items-center gap-2 bg-stone-100 text-brand-deep font-semibold px-6 py-3 rounded-btn text-sm hover:bg-stone-200"
+          >
+            Browse Menu
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
+  const displayOrder: Order = order;
 
   const statusSteps = [
     { key: "confirmed", label: "Order Received", sub: "Kitchen notified" },

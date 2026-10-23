@@ -134,14 +134,21 @@ export function Footer() {
         </div>
 
         {/* Bottom Bar */}
-        <div className="pt-8 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-emerald-300/70">
+        <div className="pt-8 flex flex-col md:flex-row items-center justify-between gap-4 text-xs text-emerald-300/80 border-t border-emerald-900/60">
           <p>© {new Date().getFullYear()} Taste of Naija Restaurant. All rights reserved.</p>
-          <div className="flex items-center gap-4">
+          
+          {/* Cybortex Technologies Badge */}
+          <div className="flex items-center gap-2 bg-emerald-950/80 border border-emerald-800/80 px-3.5 py-1.5 rounded-full text-white font-medium text-xs shadow-xs">
+            <span className="w-2 h-2 rounded-full bg-brand-accent animate-pulse" />
+            <span>Built by <strong className="text-white font-bold hover:text-brand-gold transition-colors">Cybortex Technologies</strong></span>
+          </div>
+
+          <div className="flex items-center gap-3">
             <span className="flex items-center gap-1">
               Cooked with <Heart className="w-3.5 h-3.5 text-brand-orange fill-current" /> in Lagos
             </span>
             <span>•</span>
-            <span>Paystack Secure Online Payments</span>
+            <span>Paystack Secure Payments</span>
           </div>
         </div>
       </div>

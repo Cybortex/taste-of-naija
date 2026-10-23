@@ -2,13 +2,24 @@
 
 import React from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { ArrowLeft, ShoppingBag } from "lucide-react";
 import { Step3Checkout } from "@/components/order/Step3Checkout";
 import { OrderSummarySidebar } from "@/components/order/OrderSummarySidebar";
 import { useCart } from "@/lib/cart-context";
 
 export default function CheckoutPage() {
-  const { items } = useCart();
+  const router = useRouter();
+  const { items, isLoaded } = useCart();
+
+  if (!isLoaded) {
+    return (
+      <div className="max-w-[600px] mx-auto px-4 py-24 text-center space-y-4">
+        <div className="w-12 h-12 border-4 border-brand-green border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+        <p className="text-sm text-brand-muted">Loading checkout...</p>
+      </div>
+    );
+  }
 
   if (items.length === 0) {
     return (
@@ -48,7 +59,7 @@ export default function CheckoutPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
         <div className="lg:col-span-8 bg-white p-5 sm:p-8 rounded-3xl border border-brand-border shadow-xs">
-          <Step3Checkout onBack={() => window.history.back()} />
+          <Step3Checkout onBack={() => router.push("/order")} />
         </div>
 
         <div className="hidden lg:block lg:col-span-4">
