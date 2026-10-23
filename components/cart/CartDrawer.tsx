@@ -1,14 +1,106 @@
 "use client";
 
-import React from "react";
+import React, { useEffect } from "react";
 import Link from "next/link";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
-import { X, ShoppingBag, Trash2, ArrowRight, Package, UtensilsCrossed, Clock, MapPin } from "lucide-react";
+import {
+  X,
+  ShoppingBag,
+  Trash2,
+  ArrowRight,
+  Package,
+  UtensilsCrossed,
+  Clock,
+  MapPin,
+  Plus,
+  Check,
+  AlertCircle,
+  Flame,
+} from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/utils";
 import { QuantityStepper } from "@/components/ui/QuantityStepper";
 import { FreeDeliveryBar } from "@/components/ui/FreeDeliveryBar";
 import { OrderType } from "@/types/order";
+import { DRINKS, SIDES, RICE, COMBOS, GRILLS_AND_PEPPER_SOUPS } from "@/data/menu";
+
+// Popular upsell suggestions to pair with meals
+const UPSELL_CANDIDATES = [
+  SIDES.find((s) => s.id === "side-dodo") || {
+    id: "side-dodo",
+    name: "Dodo (Fried Plantain)",
+    slug: "dodo",
+    category: "sides",
+    price: 200,
+    unit: "per portion",
+    description: "Sweet, ripe fried plantain.",
+    isPack: false,
+  },
+  DRINKS.find((d) => d.id === "drink-zobo") || {
+    id: "drink-zobo",
+    name: "Chilled Zobo Special",
+    slug: "chilled-zobo",
+    category: "drinks",
+    price: 1000,
+    unit: "per 500ml",
+    description: "Brewed hibiscus & ginger nectar.",
+    isPack: false,
+  },
+  DRINKS.find((d) => d.id === "drink-chapman") || {
+    id: "drink-chapman",
+    name: "Signature Chapman Mocktail",
+    slug: "chapman",
+    category: "drinks",
+    price: 2000,
+    unit: "per glass/bottle",
+    description: "Citrus, Angostura & cucumber mocktail.",
+    isPack: false,
+  },
+  DRINKS.find((d) => d.id === "drink-kunu-aya") || {
+    id: "drink-kunu-aya",
+    name: "Kunu Aya (Tiger Nut Milk)",
+    slug: "kunu-aya",
+    category: "drinks",
+    price: 1500,
+    unit: "per 500ml",
+    description: "Creamy, naturally sweet tiger nut milk.",
+    isPack: false,
+  },
+];
+
+// Quick starters when cart is empty
+const EMPTY_STARTERS = [
+  RICE.find((r) => r.id === "rice-jollof") || {
+    id: "rice-jollof",
+    name: "Party Jollof Rice",
+    slug: "party-jollof",
+    category: "rice",
+    price: 3500,
+    unit: "per portion",
+    description: "Smoky firewood-style party jollof.",
+    isPack: true,
+  },
+  COMBOS.find((c) => c.id === "combo-amala-gbegiri-ewedu") || {
+    id: "combo-amala-gbegiri-ewedu",
+    name: "Amala + Gbegiri & Ewedu (Abula)",
+    slug: "amala-gbegiri-ewedu",
+    category: "combos",
+    price: 4500,
+    unit: "per plate",
+    description: "Classic Lagos Island street-style Abula.",
+    isPack: true,
+  },
+  GRILLS_AND_PEPPER_SOUPS.find((g) => g.id === "grill-suya") || {
+    id: "grill-suya",
+    name: "Beef Suya",
+    slug: "beef-suya",
+    category: "grills",
+    price: 4500,
+    unit: "per portion",
+    description: "Charcoal-grilled thin beef in spicy Yaji.",
+    isPack: true,
+  },
+];
 
 export function CartDrawer() {
   const {
@@ -22,11 +114,35 @@ export function CartDrawer() {
     setOrderType,
     fees,
     itemCount,
+    addItem,
   } = useCart();
 
   const shouldReduceMotion = useReducedMotion();
 
+  // Scroll lock & Escape key listener
+  useEffect(() => {
+    if (!isCartDrawerOpen) return;
+    const origOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setIsCartDrawerOpen(false);
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+    return () => {
+      document.body.style.overflow = origOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [isCartDrawerOpen, setIsCartDrawerOpen]);
+
   if (!isCartDrawerOpen) return null;
+
+  // Determine if cart has a substantial main dish
+  const hasMainDish = items.some((item) => {
+    const cat = (item.category || "").toLowerCase();
+    return ["rice", "combos", "swallows", "soups", "grills"].includes(cat) || item.isPack;
+  });
 
   return (
     <AnimatePresence>
@@ -42,7 +158,7 @@ export function CartDrawer() {
           aria-hidden="true"
         />
 
-        <div className="fixed inset-y-0 right-0 max-w-full flex pl-6 sm:pl-10">
+        <div className="fixed inset-y-0 right-0 max-w-full flex pl-4 sm:pl-10">
           <motion.div
             initial={shouldReduceMotion ? { opacity: 0 } : { x: "100%" }}
             animate={shouldReduceMotion ? { opacity: 1 } : { x: 0 }}
@@ -51,17 +167,17 @@ export function CartDrawer() {
             className="w-screen max-w-md bg-white shadow-2xl flex flex-col justify-between overflow-hidden"
           >
             {/* Drawer Header */}
-            <div className="p-4 sm:p-5 border-b border-brand-border bg-stone-50/80 flex items-center justify-between">
-              <div className="flex items-center gap-2">
+            <div className="p-4 sm:p-5 border-b border-brand-border bg-stone-50/90 flex items-center justify-between">
+              <div className="flex items-center gap-2.5">
                 <div className="w-9 h-9 rounded-full bg-brand-green/10 flex items-center justify-center text-brand-green">
                   <ShoppingBag className="w-5 h-5" />
                 </div>
                 <div>
-                  <h2 className="font-heading font-bold text-lg text-brand-deep">
+                  <h2 className="font-heading font-black text-lg text-brand-deep leading-tight">
                     Your Order
                   </h2>
                   <p className="text-xs text-brand-muted">
-                    {itemCount} {itemCount === 1 ? "item" : "items"} in cart
+                    {itemCount} {itemCount === 1 ? "item" : "items"} selected
                   </p>
                 </div>
               </div>
@@ -88,10 +204,15 @@ export function CartDrawer() {
             </div>
 
             {/* Order Type Toggle in Cart */}
-            <div className="p-4 bg-brand-cream/60 border-b border-brand-border">
-              <label className="block text-xs font-semibold text-brand-muted uppercase tracking-wider mb-2">
-                Order Type
-              </label>
+            <div className="p-3.5 bg-brand-cream/60 border-b border-brand-border">
+              <div className="flex items-center justify-between mb-1.5">
+                <span className="text-[11px] font-bold text-brand-muted uppercase tracking-wider">
+                  How would you like to receive it?
+                </span>
+                <span className="text-[10px] font-semibold text-brand-green bg-brand-green/10 px-2 py-0.5 rounded-full">
+                  {orderType === "takeaway" ? "₦500 / pack" : orderType === "delivery" ? "From ₦2,000" : "Free table seating"}
+                </span>
+              </div>
               <div className="grid grid-cols-3 gap-1.5 bg-stone-200/70 p-1 rounded-xl">
                 {(
                   [
@@ -117,107 +238,230 @@ export function CartDrawer() {
               </div>
             </div>
 
-            {/* Cart Items List */}
-            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-3">
+            {/* Cart Items List & Content */}
+            <div className="flex-1 overflow-y-auto p-4 sm:p-5 space-y-4">
+              {/* Missing Main Meal Alert (if only drinks or sides) */}
+              {items.length > 0 && !hasMainDish && (
+                <div className="p-3 bg-amber-50 border border-amber-200/90 rounded-2xl flex items-start gap-2.5 text-xs text-amber-900">
+                  <AlertCircle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                  <div className="flex-1">
+                    <p className="font-bold">Looking for a main dish?</p>
+                    <p className="text-[11px] text-amber-800 mt-0.5 leading-snug">
+                      You have drinks/sides in your cart. Add our signature Jollof Rice or Swallow to make it a complete plate!
+                    </p>
+                    <Link
+                      href="/order"
+                      onClick={() => setIsCartDrawerOpen(false)}
+                      className="inline-flex items-center gap-1 mt-2 text-xs font-bold text-amber-900 bg-amber-100 hover:bg-amber-200 px-2.5 py-1 rounded-lg transition-colors"
+                    >
+                      <span>Add Main Dish</span>
+                      <ArrowRight className="w-3 h-3" />
+                    </Link>
+                  </div>
+                </div>
+              )}
+
+              {/* Empty State */}
               {items.length === 0 ? (
-                <div className="h-full flex flex-col items-center justify-center text-center p-6 text-brand-muted">
-                  <div className="w-16 h-16 rounded-full bg-brand-cream flex items-center justify-center text-brand-muted/70 mb-4">
+                <div className="h-full flex flex-col items-center justify-center text-center p-4 text-brand-muted">
+                  <div className="w-16 h-16 rounded-full bg-brand-green/10 flex items-center justify-center text-brand-green mb-3">
                     <ShoppingBag className="w-8 h-8" />
                   </div>
-                  <h3 className="font-heading font-bold text-lg text-brand-deep mb-1">
+                  <h3 className="font-heading font-black text-xl text-brand-deep mb-1">
                     Your cart is empty
                   </h3>
-                  <p className="text-sm text-brand-muted max-w-[240px] mb-6">
-                    Wetin you wan order? Browse our Taste of Naija favourites and start your order.
+                  <p className="text-xs text-brand-muted max-w-[260px] mb-5">
+                    Wetin you wan chop today? Start with our bestsellers or build your custom 3-step meal.
                   </p>
+
+                  {/* Quick Starter Suggestions */}
+                  <div className="w-full space-y-2 mb-6">
+                    <div className="text-[11px] font-bold text-left text-brand-muted uppercase tracking-wider flex items-center gap-1">
+                      <Flame className="w-3.5 h-3.5 text-brand-orange" />
+                      Popular Quick Starts
+                    </div>
+                    {EMPTY_STARTERS.map((starter) => (
+                      <div
+                        key={starter.id}
+                        className="p-2.5 rounded-xl bg-stone-50 border border-stone-200 flex items-center justify-between text-left hover:border-brand-green/40 transition-colors"
+                      >
+                        <div className="flex-1 pr-2">
+                          <p className="font-bold text-xs text-brand-deep">{starter.name}</p>
+                          <p className="text-[11px] font-bold text-brand-green">{formatPrice(starter.price)}</p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => addItem(starter)}
+                          className="px-3 py-1.5 rounded-lg bg-brand-green text-white text-xs font-bold hover:bg-brand-green-hover transition-colors flex items-center gap-1 shadow-xs"
+                        >
+                          <Plus className="w-3 h-3" />
+                          <span>Add</span>
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+
                   <Link
-                    href="/menu"
+                    href="/order"
                     onClick={() => setIsCartDrawerOpen(false)}
-                    className="inline-flex items-center gap-2 bg-brand-green text-white font-semibold px-5 py-2.5 rounded-btn hover:bg-brand-green-hover transition-colors text-sm shadow-sm"
+                    className="w-full inline-flex items-center justify-center gap-2 bg-brand-green text-white font-bold px-5 py-3 rounded-btn hover:bg-brand-green-hover transition-colors text-sm shadow-md"
                   >
-                    Explore Menu
+                    <span>Build 3-Step Custom Plate</span>
+                    <ArrowRight className="w-4 h-4" />
                   </Link>
                 </div>
               ) : (
-                items.map((item) => (
-                  <motion.div
-                    key={item.id}
-                    layout
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    className="p-3.5 rounded-card bg-stone-50 border border-brand-border/70 flex items-start justify-between gap-3"
-                  >
-                    <div className="flex-1">
-                      <div className="flex items-center gap-1.5">
-                        <span className="font-heading font-bold text-brand-deep text-sm">
-                          {item.name}
-                        </span>
-                        {item.isPack && (
-                          <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-sm bg-emerald-100 text-emerald-800">
-                            Pack
+                /* Item list */
+                <div className="space-y-2.5">
+                  {items.map((item) => (
+                    <motion.div
+                      key={item.id}
+                      layout
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, scale: 0.95 }}
+                      className="p-3 rounded-2xl bg-stone-50 border border-brand-border/70 flex items-start justify-between gap-3 shadow-xs hover:border-brand-green/30 transition-colors"
+                    >
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center gap-1.5 flex-wrap">
+                          <span className="font-heading font-bold text-brand-deep text-sm truncate">
+                            {item.name}
                           </span>
-                        )}
-                      </div>
-
-                      {item.meta && (
-                        <div className="text-[11px] text-brand-muted/80 mt-0.5">
-                          {item.meta.swallowName} + {item.meta.soupName}
+                          {item.id.includes("dodo") && (
+                            <span className="text-[9px] font-black px-1.5 py-0.5 rounded-full bg-amber-100 text-amber-900">
+                              ₦200
+                            </span>
+                          )}
+                          {item.isPack && (
+                            <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-sm bg-emerald-100 text-emerald-800">
+                              Pack
+                            </span>
+                          )}
                         </div>
-                      )}
 
-                      <div className="font-heading font-bold text-brand-green text-sm mt-1">
-                        {formatPrice(item.price * item.quantity)}
-                        {item.quantity > 1 && (
-                          <span className="text-[11px] font-normal text-brand-muted ml-1.5">
-                            ({formatPrice(item.price)} each)
-                          </span>
+                        {item.meta && (
+                          <div className="text-[11px] text-brand-muted/80 mt-0.5">
+                            {item.meta.swallowName} + {item.meta.soupName}
+                          </div>
                         )}
-                      </div>
-                    </div>
 
-                    <div className="flex flex-col items-end gap-2 shrink-0">
-                      <QuantityStepper
-                        size="sm"
-                        value={item.quantity}
-                        onIncrement={() => updateQuantity(item.id, 1)}
-                        onDecrement={() => updateQuantity(item.id, -1)}
-                        itemName={item.name}
-                      />
-                      <button
-                        onClick={() => removeItem(item.id)}
-                        className="text-[11px] text-brand-muted hover:text-brand-chili transition-colors"
-                      >
-                        Remove
-                      </button>
-                    </div>
-                  </motion.div>
-                ))
+                        <div className="font-heading font-black text-brand-green text-sm mt-1">
+                          {formatPrice(item.price * item.quantity)}
+                          {item.quantity > 1 && (
+                            <span className="text-[11px] font-normal text-brand-muted ml-1.5">
+                              ({formatPrice(item.price)} each)
+                            </span>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="flex flex-col items-end gap-1.5 shrink-0">
+                        <QuantityStepper
+                          size="sm"
+                          value={item.quantity}
+                          onIncrement={() => updateQuantity(item.id, 1)}
+                          onDecrement={() => updateQuantity(item.id, -1)}
+                          itemName={item.name}
+                        />
+                        <button
+                          onClick={() => removeItem(item.id)}
+                          className="text-[11px] text-brand-muted hover:text-brand-chili transition-colors"
+                        >
+                          Remove
+                        </button>
+                      </div>
+                    </motion.div>
+                  ))}
+                </div>
+              )}
+
+              {/* Pairings & Upsell Recommendations (when cart has items) */}
+              {items.length > 0 && (
+                <div className="pt-2 border-t border-brand-border/70">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-xs font-bold text-brand-deep flex items-center gap-1">
+                      <span>Add a Drink or Dodo (₦200)</span>
+                    </span>
+                    <span className="text-[10px] text-brand-muted">1-Tap Add</span>
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    {UPSELL_CANDIDATES.map((upsell) => {
+                      const inCart = items.find((i) => i.itemId === upsell.id || i.name === upsell.name);
+                      return (
+                        <div
+                          key={upsell.id}
+                          className="p-2 rounded-xl bg-stone-50 border border-brand-border flex flex-col justify-between hover:border-brand-green/40 transition-colors"
+                        >
+                          <div className="mb-1.5">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[11px] font-bold text-brand-deep line-clamp-1">
+                                {upsell.name}
+                              </span>
+                              {upsell.id.includes("dodo") && (
+                                <span className="text-[9px] font-black px-1 rounded bg-amber-100 text-amber-900 shrink-0">
+                                  ₦200
+                                </span>
+                              )}
+                            </div>
+                            <span className="text-xs font-extrabold text-brand-green">
+                              {formatPrice(upsell.price)}
+                            </span>
+                          </div>
+
+                          {inCart ? (
+                            <div className="flex items-center justify-between bg-white border border-brand-green/30 rounded-lg p-1 text-[11px]">
+                              <span className="text-brand-green font-bold flex items-center gap-0.5">
+                                <Check className="w-3 h-3" />
+                                {inCart.quantity} in cart
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => updateQuantity(inCart.id, 1)}
+                                className="w-5 h-5 rounded bg-brand-green/10 text-brand-green font-bold flex items-center justify-center hover:bg-brand-green hover:text-white"
+                                title="Add another"
+                              >
+                                +
+                              </button>
+                            </div>
+                          ) : (
+                            <button
+                              type="button"
+                              onClick={() => addItem(upsell)}
+                              className="w-full py-1 px-2 rounded-lg bg-white border border-brand-border text-brand-deep text-[11px] font-bold hover:bg-brand-green hover:text-white hover:border-brand-green transition-colors flex items-center justify-center gap-1 shadow-2xs"
+                            >
+                              <Plus className="w-3 h-3" />
+                              <span>Add</span>
+                            </button>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               )}
             </div>
 
-            {/* Drawer Footer with Calculations */}
+            {/* Drawer Footer with Calculations & Single-Click Progression */}
             {items.length > 0 && (
-              <div className="p-4 sm:p-5 border-t border-brand-border bg-stone-50/90 space-y-3">
+              <div className="p-4 sm:p-5 border-t border-brand-border bg-stone-50/95 space-y-3">
                 {/* Free Delivery Bar if Delivery selected */}
-                {orderType === "delivery" && (
-                  <FreeDeliveryBar subtotal={fees.subtotal} />
-                )}
+                {orderType === "delivery" && <FreeDeliveryBar subtotal={fees.subtotal} />}
 
                 {/* Price Breakdown */}
-                <div className="space-y-1.5 text-xs sm:text-sm text-brand-deep">
+                <div className="space-y-1.5 text-xs text-brand-deep">
                   <div className="flex justify-between">
                     <span className="text-brand-muted">Subtotal</span>
-                    <span className="font-medium">{formatPrice(fees.subtotal)}</span>
+                    <span className="font-semibold">{formatPrice(fees.subtotal)}</span>
                   </div>
 
                   {orderType === "takeaway" && (
                     <div className="flex justify-between">
                       <span className="text-brand-muted flex items-center gap-1">
                         <Package className="w-3.5 h-3.5 text-brand-green" />
-                        Takeaway packaging ({fees.totalPacks} {fees.totalPacks === 1 ? "pack" : "packs"})
+                        Takeaway pack ({fees.totalPacks} {fees.totalPacks === 1 ? "pack" : "packs"})
                       </span>
-                      <span className="font-medium">{formatPrice(fees.takeawayFee)}</span>
+                      <span className="font-semibold">{formatPrice(fees.takeawayFee)}</span>
                     </div>
                   )}
 
@@ -227,7 +471,7 @@ export function CartDrawer() {
                         <Clock className="w-3.5 h-3.5 text-brand-green" />
                         Delivery fee
                       </span>
-                      <span className="font-medium">
+                      <span className="font-semibold">
                         {fees.deliveryFee === 0 ? (
                           <span className="text-brand-success font-bold">FREE</span>
                         ) : (
@@ -244,8 +488,8 @@ export function CartDrawer() {
                     </div>
                   )}
 
-                  <div className="pt-2 border-t border-brand-border flex justify-between items-baseline text-base sm:text-lg">
-                    <span className="font-heading font-bold text-brand-deep">Estimated Total</span>
+                  <div className="pt-2 border-t border-brand-border flex justify-between items-baseline">
+                    <span className="font-heading font-bold text-brand-deep text-sm">Total Due</span>
                     <motion.span
                       key={fees.total}
                       initial={shouldReduceMotion ? false : { scale: 1.1, color: "#22C55E" }}
@@ -258,8 +502,8 @@ export function CartDrawer() {
                   </div>
                 </div>
 
-                {/* Checkout CTA */}
-                <div className="pt-1">
+                {/* Checkout CTA Buttons */}
+                <div className="pt-1 space-y-2">
                   {orderType === "delivery" && !fees.minDeliveryMet ? (
                     <div className="p-2.5 rounded-btn bg-amber-50 border border-amber-200 text-center text-xs text-amber-800 font-medium">
                       Minimum order for delivery is ₦10,000. Add more items to proceed.
@@ -268,9 +512,9 @@ export function CartDrawer() {
                     <Link
                       href="/checkout"
                       onClick={() => setIsCartDrawerOpen(false)}
-                      className="w-full flex items-center justify-center gap-2 bg-brand-green hover:bg-brand-green-hover text-white font-bold py-3.5 px-4 rounded-btn transition-colors shadow-sm text-sm sm:text-base group"
+                      className="w-full flex items-center justify-center gap-2 bg-brand-green hover:bg-brand-green-hover text-white font-extrabold py-3.5 px-4 rounded-btn transition-all shadow-md text-sm sm:text-base group"
                     >
-                      <span>Proceed to Checkout</span>
+                      <span>Proceed to Payment</span>
                       <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" />
                     </Link>
                   )}
@@ -278,9 +522,10 @@ export function CartDrawer() {
                   <Link
                     href="/order"
                     onClick={() => setIsCartDrawerOpen(false)}
-                    className="w-full mt-2 flex items-center justify-center gap-2 bg-stone-100 hover:bg-stone-200 text-brand-deep font-semibold py-2.5 px-4 rounded-btn transition-colors text-xs text-center"
+                    className="w-full flex items-center justify-center gap-2 bg-stone-100 hover:bg-stone-200 text-brand-deep font-bold py-2.5 px-4 rounded-btn transition-colors text-xs text-center"
                   >
-                    Open 3-Step Custom Plate Builder
+                    <span>Add More via 3-Step Meal Builder</span>
+                    <ArrowRight className="w-3.5 h-3.5" />
                   </Link>
                 </div>
               </div>

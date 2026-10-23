@@ -2,15 +2,27 @@
 
 import React from "react";
 import { motion, useReducedMotion } from "framer-motion";
-import { ShoppingBag, Package, Clock, UtensilsCrossed, Trash2 } from "lucide-react";
+import { ShoppingBag, Package, Clock, UtensilsCrossed, Trash2, ArrowRight } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/utils";
 import { QuantityStepper } from "@/components/ui/QuantityStepper";
 import { FreeDeliveryBar } from "@/components/ui/FreeDeliveryBar";
 
-export function OrderSummarySidebar() {
+interface OrderSummarySidebarProps {
+  currentStep?: 1 | 2 | 3;
+  onStepChange?: (step: 1 | 2 | 3) => void;
+}
+
+export function OrderSummarySidebar({
+  currentStep,
+  onStepChange,
+}: OrderSummarySidebarProps) {
   const { items, orderType, fees, updateQuantity, removeItem, clearCart, itemCount } = useCart();
   const shouldReduceMotion = useReducedMotion();
+
+  const hasMain = items.some((i) =>
+    ["combos", "rice", "grills", "swallows", "soups"].includes(i.category)
+  );
 
   return (
     <div className="bg-white rounded-card border border-brand-border shadow-card p-5 sticky top-24 space-y-5">
@@ -144,6 +156,34 @@ export function OrderSummarySidebar() {
             {formatPrice(fees.total)}
           </motion.span>
         </div>
+
+        {/* Step-aware Quick Advancement CTA Button */}
+        {onStepChange && currentStep && (
+          <div className="pt-3">
+            {currentStep === 1 && (
+              <button
+                type="button"
+                onClick={() => onStepChange(2)}
+                disabled={!hasMain}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-btn bg-brand-green hover:bg-brand-green-hover disabled:bg-stone-200 disabled:text-stone-400 disabled:cursor-not-allowed text-white font-heading font-extrabold text-sm shadow-md transition-all active:scale-95 group"
+              >
+                <span>{hasMain ? "Continue to Step 2: Drinks & Sides" : "Select a Main Dish to Continue"}</span>
+                {hasMain && <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />}
+              </button>
+            )}
+
+            {currentStep === 2 && (
+              <button
+                type="button"
+                onClick={() => onStepChange(3)}
+                className="w-full flex items-center justify-center gap-2 py-3 px-4 rounded-btn bg-brand-green hover:bg-brand-green-hover text-white font-heading font-extrabold text-sm shadow-md transition-all active:scale-95 group"
+              >
+                <span>Proceed to Step 3: Checkout</span>
+                <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+              </button>
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

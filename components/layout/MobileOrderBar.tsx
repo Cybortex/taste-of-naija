@@ -1,16 +1,19 @@
 "use client";
 
 import React from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion";
 import { ShoppingBag, ArrowRight } from "lucide-react";
 import { useCart } from "@/lib/cart-context";
 import { formatPrice } from "@/lib/utils";
 
 export function MobileOrderBar() {
+  const pathname = usePathname();
   const { itemCount, fees, setIsCartDrawerOpen } = useCart();
   const shouldReduceMotion = useReducedMotion();
 
-  if (itemCount === 0) return null;
+  // Hide when cart is empty or when user is already on the dedicated 3-step /order builder
+  if (itemCount === 0 || pathname === "/order") return null;
 
   return (
     <AnimatePresence>
