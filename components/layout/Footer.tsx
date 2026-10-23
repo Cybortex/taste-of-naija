@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { MapPin, Phone, Mail, Clock, ShieldCheck, Heart } from "lucide-react";
+import { Logo } from "@/components/ui/Logo";
 
 export function Footer() {
   return (
@@ -9,14 +10,9 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-10 pb-12 border-b border-emerald-800/80">
           {/* Col 1: Brand Info */}
           <div className="space-y-4">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-xl bg-brand-green flex items-center justify-center text-white font-heading font-black text-xl shadow-md">
-                N
-              </div>
-              <span className="font-heading font-extrabold text-white text-xl tracking-tight">
-                Taste of Naija
-              </span>
-            </div>
+            <Link href="/" className="group inline-block">
+              <Logo variant="full" theme="dark" size="md" />
+            </Link>
             <p className="text-sm text-emerald-200/80 leading-relaxed">
               Real Nigerian food, made with pride. From our pot to your table — experience the authentic rich flavours of Lagos, Ibadan, and Calabar with modern ordering convenience.
             </p>
