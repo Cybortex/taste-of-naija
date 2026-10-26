@@ -28,7 +28,7 @@ export interface OrderItem {
 export interface CustomerDetails {
   name: string;
   phone: string;
-  email: string;
+  email?: string;
   // For Dine-in:
   timeSlot?: string;
   guestsCount?: number;

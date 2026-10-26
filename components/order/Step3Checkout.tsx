@@ -136,6 +136,23 @@ export function Step3Checkout({ onBack }: Step3CheckoutProps) {
         // storage fallback
       }
 
+      // Live Cloud & WhatsApp Notification Dispatch (Non-blocking)
+      try {
+        fetch("/api/orders", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ order: newOrder }),
+        }).catch(() => {});
+
+        fetch("/api/alerts/whatsapp", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ order: newOrder }),
+        }).catch(() => {});
+      } catch {
+        // Non-blocking network fallback
+      }
+
       clearCart();
       router.push(`/order/confirmation/${orderId}`);
     };

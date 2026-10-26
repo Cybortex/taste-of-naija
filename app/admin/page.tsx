@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import {
   TrendingUp,
@@ -21,9 +21,24 @@ import {
   Truck,
   ArrowUpDown,
   Download,
+  Bell,
+  Volume2,
+  VolumeX,
+  MessageCircle,
+  Send,
+  Printer,
+  X,
+  Eye,
+  Check,
 } from "lucide-react";
 import { Order, OrderStatus, TransactionRecord } from "@/types/order";
 import { formatPrice } from "@/lib/utils";
+import { audioAlert } from "@/lib/audioAlert";
+import {
+  getAdminWhatsAppUrl,
+  getRiderWhatsAppUrl,
+  getCustomerWhatsAppUrl,
+} from "@/lib/whatsappAlert";
 
 // Seed data for immediate demonstration if no orders yet
 const SAMPLE_ORDERS: Order[] = [
@@ -80,10 +95,10 @@ const SAMPLE_ORDERS: Order[] = [
       name: "Babatunde Adeleke",
       phone: "0803 234 5678",
       email: "babatunde@example.com",
-      address: "Plot 12, Sanusi Fafunwa Street",
+      address: "14 Adeola Odeku Street",
       city: "Victoria Island, Lagos",
-      landmark: "Opposite Access Bank",
-      deliveryNotes: "Call rider when gate is reached.",
+      landmark: "Near Diamond Bank",
+      deliveryNotes: "Call when rider reaches the gate.",
     },
     paymentMethod: "paystack",
     paymentReference: "pstk_live_89123891",
@@ -98,19 +113,19 @@ const SAMPLE_ORDERS: Order[] = [
     items: [
       {
         id: "item-5",
-        itemId: "rice-party-jollof",
+        itemId: "rice-jollof",
         name: "Party Jollof Rice",
         category: "rice",
-        price: 2500,
+        price: 3500,
         quantity: 4,
         isPack: true,
       },
       {
         id: "item-6",
-        itemId: "protein-beef-suya",
-        name: "Beef Suya Skewers",
+        itemId: "grill-suya",
+        name: "Beef Suya",
         category: "grills",
-        price: 2500,
+        price: 4500,
         quantity: 2,
         isPack: true,
       },
@@ -159,60 +174,88 @@ const SAMPLE_ORDERS: Order[] = [
       },
       {
         id: "item-9",
-        itemId: "protein-goat-meat",
-        name: "Goat Meat",
+        itemId: "protein-assorted-meat",
+        name: "Assorted Meat (Shaki, Beef)",
         category: "proteins",
-        price: 800,
-        quantity: 4,
+        price: 2500,
+        quantity: 2,
         isPack: false,
       },
       {
         id: "item-10",
         itemId: "drink-palm-wine",
-        name: "Fresh Palm Wine",
+        name: "Fresh Palm Wine (1L)",
         category: "drinks",
         price: 2500,
         quantity: 1,
         isPack: false,
       },
+      {
+        id: "item-11",
+        itemId: "side-dodo",
+        name: "Dodo (Fried Plantain)",
+        category: "sides",
+        price: 200,
+        quantity: 1,
+        isPack: false,
+      },
     ],
-    subtotal: 7700,
+    subtotal: 7200,
     takeawayPacks: 2,
-    takeawayFee: 0,
+    takeawayFee: 500,
     deliveryFee: 0,
     total: 7700,
     customer: {
-      name: "Dr. Kunle Alabi",
-      phone: "0907 164 9725",
-      email: "kunle.alabi@unilag.edu.ng",
-      timeSlot: "19:30",
+      name: "Emeka Okafor",
+      phone: "0703 555 1294",
+      email: "emeka.okafor@example.ng",
+      timeSlot: "13:30 - Table for 2",
     },
     paymentMethod: "pay_at_restaurant",
+    paymentReference: "RES_DIN_660412",
     paymentStatus: "pending",
   },
   {
-    id: "TON-559102-391",
+    id: "TON-552910-331",
     reference: "pstk_live_55910239",
     createdAt: new Date(Date.now() - 1000 * 60 * 120).toISOString(),
     status: "completed",
     type: "takeaway",
     items: [
       {
-        id: "item-11",
-        itemId: "rice-ofada-ayamase",
-        name: "Ofada Rice & Ayamase",
+        id: "item-12",
+        itemId: "rice-fried",
+        name: "Nigerian Fried Rice",
         category: "rice",
-        price: 3000,
+        price: 4000,
         quantity: 2,
         isPack: true,
       },
       {
-        id: "item-12",
+        id: "item-13",
         itemId: "protein-fried-fish",
-        name: "Fried Fish",
+        name: "Fried Catfish Chunks",
         category: "proteins",
-        price: 3000,
-        quantity: 2,
+        price: 3500,
+        quantity: 1,
+        isPack: false,
+      },
+      {
+        id: "item-14",
+        itemId: "drink-kunu-aya",
+        name: "Kunu Aya (Tiger Nut Milk)",
+        category: "drinks",
+        price: 1500,
+        quantity: 1,
+        isPack: false,
+      },
+      {
+        id: "item-15",
+        itemId: "side-dodo",
+        name: "Dodo (Fried Plantain)",
+        category: "sides",
+        price: 200,
+        quantity: 1,
         isPack: false,
       },
     ],
@@ -271,14 +314,14 @@ const SAMPLE_TRANSACTIONS: TransactionRecord[] = [
     channel: "pay_on_arrival",
     status: "pending",
     paidAt: new Date(Date.now() - 1000 * 60 * 75).toISOString(),
-    customerName: "Dr. Kunle Alabi",
-    customerPhone: "0907 164 9725",
-    customerEmail: "kunle.alabi@unilag.edu.ng",
+    customerName: "Emeka Okafor",
+    customerPhone: "0703 555 1294",
+    customerEmail: "emeka.okafor@example.ng",
     orderType: "dine-in",
   },
   {
     id: "TX-104",
-    orderId: "TON-559102-391",
+    orderId: "TON-552910-331",
     reference: "pstk_live_55910239",
     amount: 12500,
     currency: "NGN",
@@ -301,19 +344,28 @@ export default function AdminDashboardPage() {
   const [typeFilter, setTypeFilter] = useState<string>("all");
   const [notification, setNotification] = useState<string | null>(null);
 
-  // Load orders and transactions from localStorage
-  const loadData = () => {
+  // Audio Alerts & Live Polling State
+  const [isSoundEnabled, setIsSoundEnabled] = useState(true);
+  const [activeAlertOrder, setActiveAlertOrder] = useState<Order | null>(null);
+  const [selectedOrderForModal, setSelectedOrderForModal] = useState<Order | null>(null);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [lastSyncedTime, setLastSyncedTime] = useState<Date>(new Date());
+  const knownOrderIds = useRef<Set<string>>(new Set());
+
+  // Load initial orders and transactions from localStorage
+  const loadInitialData = () => {
     try {
       const storedOrders = localStorage.getItem("taste_of_naija_orders");
       const storedTx = localStorage.getItem("taste_of_naija_transactions");
 
+      let currentOrders: Order[] = SAMPLE_ORDERS;
       if (storedOrders) {
-        setOrders(JSON.parse(storedOrders));
+        currentOrders = JSON.parse(storedOrders);
       } else {
-        // Initialize with realistic seed data if empty
         localStorage.setItem("taste_of_naija_orders", JSON.stringify(SAMPLE_ORDERS));
-        setOrders(SAMPLE_ORDERS);
       }
+      setOrders(currentOrders);
+      currentOrders.forEach((o) => knownOrderIds.current.add(o.id));
 
       if (storedTx) {
         setTransactions(JSON.parse(storedTx));
@@ -324,33 +376,205 @@ export default function AdminDashboardPage() {
     } catch {
       setOrders(SAMPLE_ORDERS);
       setTransactions(SAMPLE_TRANSACTIONS);
+      SAMPLE_ORDERS.forEach((o) => knownOrderIds.current.add(o.id));
+    }
+  };
+
+  // Poll live orders from cloud /api/orders
+  const pollCloudOrders = async (isInitial = false) => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch("/api/orders?limit=50");
+      const data = await res.json();
+
+      if (data?.orders && Array.isArray(data.orders) && data.orders.length > 0) {
+        const cloudOrders: Order[] = data.orders.map((o: any) => ({
+          id: o.orderId,
+          reference: o.reference,
+          createdAt: o.createdAt,
+          status: o.status,
+          type: o.type,
+          items: o.items,
+          subtotal: o.subtotal,
+          takeawayPacks: o.takeawayPacks,
+          takeawayFee: o.takeawayFee,
+          deliveryFee: o.deliveryFee,
+          total: o.total,
+          customer: o.customer,
+          paymentMethod: o.paymentMethod,
+          paymentReference: o.paymentReference,
+          paymentStatus: o.paymentStatus || (o.status === "awaiting_payment" ? "pending" : "paid"),
+        }));
+
+        if (!isInitial) {
+          const freshOrders = cloudOrders.filter((o) => !knownOrderIds.current.has(o.id));
+          if (freshOrders.length > 0) {
+            // Trigger Audible Chime Bell & High-Attention Visual Alert
+            audioAlert.playNewOrderChime();
+            setActiveAlertOrder(freshOrders[0]);
+            showNotification(
+              `🔔 NEW ORDER RECEIVED! #${freshOrders[0].id} from ${freshOrders[0].customer.name} (${formatPrice(
+                freshOrders[0].total
+              )})`
+            );
+          }
+        }
+
+        // Add to known IDs
+        cloudOrders.forEach((o) => knownOrderIds.current.add(o.id));
+
+        // Merge with existing local orders
+        setOrders((prev) => {
+          const map = new Map<string, Order>();
+          prev.forEach((o) => map.set(o.id, o));
+          cloudOrders.forEach((o) => map.set(o.id, o));
+          const merged = Array.from(map.values()).sort(
+            (a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+          try {
+            localStorage.setItem("taste_of_naija_orders", JSON.stringify(merged));
+          } catch {}
+          return merged;
+        });
+      }
+    } catch {
+      // offline fallback
+    } finally {
+      setIsSyncing(false);
+      setLastSyncedTime(new Date());
     }
   };
 
   useEffect(() => {
-    loadData();
+    loadInitialData();
+    pollCloudOrders(true);
+
+    // Setup periodic 6-second live polling
+    const interval = setInterval(() => {
+      pollCloudOrders(false);
+    }, 6000);
+
+    return () => clearInterval(interval);
   }, []);
 
   const showNotification = (msg: string) => {
     setNotification(msg);
-    setTimeout(() => setNotification(null), 3000);
+    setTimeout(() => setNotification(null), 4000);
   };
 
-  // Status updater
-  const handleUpdateOrderStatus = (orderId: string, newStatus: OrderStatus) => {
+  const toggleSound = () => {
+    const next = !isSoundEnabled;
+    setIsSoundEnabled(next);
+    audioAlert.setSoundEnabled(next);
+    if (next) {
+      audioAlert.playNewOrderChime();
+      showNotification("🔊 Kitchen Audio Alerts Enabled! Bell sound active.");
+    } else {
+      showNotification("🔇 Kitchen Audio Alerts Muted.");
+    }
+  };
+
+  const handleTestChime = () => {
+    audioAlert.playNewOrderChime();
+    showNotification("🔔 Test bell chime played!");
+  };
+
+  // Simulate an incoming live customer order for testing
+  const handleSimulateTestOrder = () => {
+    const randomNum = Math.floor(100 + Math.random() * 900);
+    const testOrder: Order = {
+      id: `TON-${Date.now().toString().slice(-6)}-${randomNum}`,
+      reference: `pstk_test_${Date.now()}`,
+      createdAt: new Date().toISOString(),
+      status: "confirmed",
+      type: "delivery",
+      items: [
+        {
+          id: `item-sim-1-${randomNum}`,
+          itemId: "rice-jollof",
+          name: "Party Jollof Rice (Firewood Flavoured)",
+          category: "rice",
+          price: 3500,
+          quantity: 2,
+          isPack: true,
+        },
+        {
+          id: `item-sim-2-${randomNum}`,
+          itemId: "side-dodo",
+          name: "Dodo (Fried Plantain)",
+          category: "sides",
+          price: 200,
+          quantity: 2,
+          isPack: false,
+        },
+        {
+          id: `item-sim-3-${randomNum}`,
+          itemId: "drink-zobo",
+          name: "Chilled Zobo Special",
+          category: "drinks",
+          price: 1000,
+          quantity: 2,
+          isPack: false,
+        },
+      ],
+      subtotal: 9400,
+      takeawayPacks: 2,
+      takeawayFee: 500,
+      deliveryFee: 3000,
+      total: 12900,
+      customer: {
+        name: "Olumide Bakare",
+        phone: "0803 112 4499",
+        email: "olumide.bakare@lagos.ng",
+        address: "Plot 12, Admiralty Way, Lekki Phase 1",
+        city: "Lagos",
+        landmark: "Beside Domino's Pizza",
+        deliveryNotes: "Call when rider reaches the gate.",
+      },
+      paymentMethod: "paystack",
+      paymentReference: `pstk_ref_${Date.now()}`,
+      paymentStatus: "paid",
+    };
+
+    // Play chime bell
+    audioAlert.playNewOrderChime();
+    setActiveAlertOrder(testOrder);
+    knownOrderIds.current.add(testOrder.id);
+
+    setOrders((prev) => {
+      const next = [testOrder, ...prev];
+      try {
+        localStorage.setItem("taste_of_naija_orders", JSON.stringify(next));
+      } catch {}
+      return next;
+    });
+
+    showNotification(`🔔 Test Order #${testOrder.id} simulated successfully!`);
+  };
+
+  // Status updater with Cloud API sync
+  const handleUpdateOrderStatus = async (orderId: string, newStatus: OrderStatus) => {
     const updated = orders.map((o) => (o.id === orderId ? { ...o, status: newStatus } : o));
     setOrders(updated);
+
     try {
       localStorage.setItem("taste_of_naija_orders", JSON.stringify(updated));
-      // Also update single record
       const single = updated.find((o) => o.id === orderId);
       if (single) {
         localStorage.setItem(`order_${orderId}`, JSON.stringify(single));
       }
-    } catch {
-      // storage error
-    }
-    showNotification(`Order ${orderId} updated to: ${newStatus.replace("_", " ").toUpperCase()}`);
+    } catch {}
+
+    // Cloud patch
+    try {
+      fetch("/api/orders", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ orderId, status: newStatus }),
+      }).catch(() => {});
+    } catch {}
+
+    showNotification(`Order ${orderId} status set to: ${newStatus.replace("_", " ").toUpperCase()}`);
   };
 
   // Payment status updater
@@ -368,9 +592,7 @@ export default function AdminDashboardPage() {
     setOrders(updated);
     try {
       localStorage.setItem("taste_of_naija_orders", JSON.stringify(updated));
-    } catch {
-      // ignore
-    }
+    } catch {}
     showNotification(`Payment confirmed for Order ${orderId}`);
   };
 
@@ -412,50 +634,143 @@ export default function AdminDashboardPage() {
   });
 
   return (
-    <div className="max-w-[1300px] mx-auto px-4 sm:px-6 py-8 sm:py-12 space-y-8">
+    <div className="max-w-[1300px] mx-auto px-4 sm:px-6 py-6 sm:py-10 space-y-6">
       {/* Top Banner & Header */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-brand-border/70 pb-6">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 flex-wrap">
             <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
             <span className="text-xs font-bold uppercase tracking-wider text-brand-green bg-brand-green/10 px-3 py-1 rounded-full">
-              Kitchen & Operations Dashboard
+              Live Kitchen & Operations Dashboard
+            </span>
+            <span className="text-[11px] font-semibold text-brand-muted flex items-center gap-1 bg-stone-100 px-2.5 py-0.5 rounded-full">
+              <span className={`w-1.5 h-1.5 rounded-full ${isSyncing ? "bg-amber-500 animate-ping" : "bg-emerald-500"}`} />
+              <span>Live sync {isSyncing ? "updating..." : `(${lastSyncedTime.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", second: "2-digit" })})`}</span>
             </span>
           </div>
           <h1 className="font-heading font-black text-3xl sm:text-4xl text-brand-deep mt-2">
             Taste of Naija Admin
           </h1>
           <p className="text-xs sm:text-sm text-brand-muted mt-1">
-            Central hub for live order status dispatching, kitchen workflows, and Paystack online payment reconciliation.
+            Real-time order intake, audible kitchen alerts, WhatsApp dispatch, and Paystack reconciliation.
           </p>
         </div>
 
-        <div className="flex items-center gap-3">
+        {/* Top Control Bar Actions */}
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
+          {/* Sound Alert Toggle */}
           <button
             type="button"
-            onClick={loadData}
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full border border-brand-border bg-white text-xs font-bold text-brand-deep hover:bg-stone-50 shadow-2xs transition-colors"
+            onClick={toggleSound}
+            className={`inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full text-xs font-extrabold border transition-all ${
+              isSoundEnabled
+                ? "bg-emerald-50 text-emerald-800 border-emerald-300 hover:bg-emerald-100"
+                : "bg-stone-100 text-stone-500 border-stone-200 hover:bg-stone-200"
+            }`}
+            title={isSoundEnabled ? "Audio Bell Alerts ON" : "Audio Bell Alerts MUTED"}
           >
-            <RefreshCw className="w-3.5 h-3.5" />
-            <span>Refresh Telemetry</span>
+            {isSoundEnabled ? <Volume2 className="w-4 h-4 text-brand-green" /> : <VolumeX className="w-4 h-4" />}
+            <span>{isSoundEnabled ? "Sound: ON" : "Sound: MUTED"}</span>
           </button>
 
-          <Link
-            href="/order"
-            target="_blank"
-            className="inline-flex items-center gap-2 px-4 py-2.5 rounded-full bg-brand-green text-white text-xs font-bold hover:bg-brand-green-hover shadow-xs transition-colors"
+          {/* Test Chime */}
+          <button
+            type="button"
+            onClick={handleTestChime}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-brand-border bg-white text-xs font-bold text-brand-deep hover:bg-stone-50 transition-colors shadow-2xs"
+            title="Test Restaurant Kitchen Bell Sound"
           >
-            <span>Open Customer Order Flow</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </Link>
+            <Bell className="w-3.5 h-3.5 text-brand-orange" />
+            <span>Test Bell</span>
+          </button>
+
+          {/* Simulate Test Order */}
+          <button
+            type="button"
+            onClick={handleSimulateTestOrder}
+            className="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-full bg-brand-orange hover:bg-brand-orange-hover text-white text-xs font-bold transition-all shadow-xs"
+          >
+            <span>+ Simulate Order</span>
+          </button>
+
+          {/* Manual Refresh */}
+          <button
+            type="button"
+            onClick={() => pollCloudOrders(false)}
+            disabled={isSyncing}
+            className="inline-flex items-center gap-1.5 px-3 py-2 rounded-full border border-brand-border bg-white text-xs font-bold text-brand-deep hover:bg-stone-50 transition-colors shadow-2xs"
+          >
+            <RefreshCw className={`w-3.5 h-3.5 ${isSyncing ? "animate-spin" : ""}`} />
+            <span>Sync</span>
+          </button>
         </div>
       </div>
 
+      {/* NEW ORDER ARRIVAL POPUP BANNER */}
+      {activeAlertOrder && (
+        <div className="p-4 sm:p-5 rounded-3xl bg-gradient-to-r from-emerald-600 via-emerald-700 to-brand-green text-white shadow-xl border border-emerald-400 flex flex-col md:flex-row md:items-center justify-between gap-4 animate-bounce">
+          <div className="flex items-start sm:items-center gap-3.5">
+            <div className="w-12 h-12 rounded-2xl bg-white/20 backdrop-blur-md flex items-center justify-center shrink-0 text-white">
+              <Bell className="w-6 h-6 animate-swing" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="text-[11px] uppercase tracking-wider font-extrabold px-2 py-0.5 rounded-full bg-white text-brand-green">
+                  New Order Received!
+                </span>
+                <span className="text-xs font-mono font-bold text-white/90">
+                  #{activeAlertOrder.id}
+                </span>
+              </div>
+              <h3 className="font-heading font-black text-lg sm:text-xl text-white mt-0.5">
+                {activeAlertOrder.customer.name} • {formatPrice(activeAlertOrder.total)}
+              </h3>
+              <p className="text-xs text-white/80">
+                {activeAlertOrder.type.toUpperCase()} • {activeAlertOrder.items.length} items • Phone: {activeAlertOrder.customer.phone}
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2 shrink-0">
+            <a
+              href={getAdminWhatsAppUrl(activeAlertOrder)}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-flex items-center gap-1.5 bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all"
+            >
+              <MessageCircle className="w-4 h-4" />
+              <span>WhatsApp Kitchen</span>
+            </a>
+
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedOrderForModal(activeAlertOrder);
+                setActiveAlertOrder(null);
+              }}
+              className="inline-flex items-center gap-1.5 bg-white text-brand-deep hover:bg-stone-100 font-extrabold text-xs px-4 py-2.5 rounded-xl shadow-md transition-all"
+            >
+              <Eye className="w-4 h-4" />
+              <span>View Ticket</span>
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setActiveAlertOrder(null)}
+              className="w-8 h-8 rounded-full bg-white/20 hover:bg-white/30 text-white flex items-center justify-center transition-colors"
+              title="Acknowledge & Dismiss"
+            >
+              <X className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Notifications Toast */}
       {notification && (
-        <div className="p-3.5 rounded-xl bg-brand-green text-white text-xs font-bold shadow-md flex items-center justify-between animate-fadeIn">
+        <div className="p-3.5 rounded-2xl bg-brand-deep text-white text-xs font-bold shadow-md flex items-center justify-between animate-fadeIn">
           <div className="flex items-center gap-2">
-            <CheckCircle2 className="w-4 h-4" />
+            <CheckCircle2 className="w-4 h-4 text-brand-green" />
             <span>{notification}</span>
           </div>
           <button onClick={() => setNotification(null)} className="text-white/80 hover:text-white">
@@ -617,7 +932,7 @@ export default function AdminDashboardPage() {
                   <th className="py-4 px-5">Fulfillment</th>
                   <th className="py-4 px-5">Dishes & Packs</th>
                   <th className="py-4 px-5">Total & Payment</th>
-                  <th className="py-4 px-5">Order Status Action</th>
+                  <th className="py-4 px-5">Status & WhatsApp Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-brand-border/60">
@@ -643,9 +958,13 @@ export default function AdminDashboardPage() {
                       <tr key={order.id} className="hover:bg-stone-50/70 transition-colors">
                         {/* Order ID & Time */}
                         <td className="py-4 px-5 align-top">
-                          <div className="font-mono font-bold text-brand-deep text-xs">
+                          <button
+                            type="button"
+                            onClick={() => setSelectedOrderForModal(order)}
+                            className="font-mono font-bold text-brand-green hover:underline text-xs text-left"
+                          >
                             {order.id}
-                          </div>
+                          </button>
                           <div className="text-[11px] text-brand-muted mt-1">
                             {new Date(order.createdAt).toLocaleTimeString([], {
                               hour: "2-digit",
@@ -657,21 +976,19 @@ export default function AdminDashboardPage() {
                           </div>
                         </td>
 
-                        {/* Customer */}
+                        {/* Customer Info */}
                         <td className="py-4 px-5 align-top">
                           <div className="font-heading font-bold text-brand-deep">
                             {order.customer.name}
                           </div>
-                          <a
-                            href={`tel:${order.customer.phone}`}
-                            className="text-xs text-brand-green font-medium flex items-center gap-1 hover:underline mt-0.5"
-                          >
-                            <Phone className="w-3 h-3" />
+                          <div className="text-xs text-brand-muted flex items-center gap-1 mt-0.5">
+                            <Phone className="w-3 h-3 text-brand-green" />
                             <span>{order.customer.phone}</span>
-                          </a>
+                          </div>
                           {order.customer.address && (
-                            <div className="text-[11px] text-brand-muted mt-1 max-w-[200px] line-clamp-2">
-                              {order.customer.address}, {order.customer.city}
+                            <div className="text-[11px] text-stone-600 flex items-start gap-1 mt-1 max-w-[200px] line-clamp-2">
+                              <MapPin className="w-3 h-3 text-brand-orange shrink-0 mt-0.5" />
+                              <span>{order.customer.address}</span>
                             </div>
                           )}
                         </td>
@@ -694,7 +1011,7 @@ export default function AdminDashboardPage() {
                           </span>
 
                           <div className="text-[11px] text-brand-muted mt-1.5">
-                            {order.type === "dine-in" && `Table Time: ${order.customer.timeSlot || "Scheduled"}`}
+                            {order.type === "dine-in" && `Table: ${order.customer.timeSlot || "Scheduled"}`}
                             {order.type === "takeaway" && `Pickup: ${order.customer.pickupTime || "Standard"}`}
                             {order.type === "delivery" && `Dispatch target: 45m`}
                           </div>
@@ -754,7 +1071,7 @@ export default function AdminDashboardPage() {
                           )}
                         </td>
 
-                        {/* Live Status Selector Action */}
+                        {/* Live Status Selector & WhatsApp Actions */}
                         <td className="py-4 px-5 align-top">
                           <div className="space-y-2">
                             <select
@@ -774,15 +1091,55 @@ export default function AdminDashboardPage() {
                               <option value="cancelled">Cancelled</option>
                             </select>
 
-                            <div className="flex items-center gap-2">
-                              <Link
-                                href={`/order/confirmation/${order.id}`}
+                            {/* WhatsApp Actions Row */}
+                            <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                              {/* Send to Kitchen WhatsApp */}
+                              <a
+                                href={getAdminWhatsAppUrl(order)}
                                 target="_blank"
-                                className="text-[11px] text-brand-green font-semibold hover:underline inline-flex items-center gap-1"
+                                rel="noopener noreferrer"
+                                className="px-2 py-1 rounded-lg bg-[#25D366]/10 hover:bg-[#25D366] text-[#128C7E] hover:text-white text-[11px] font-bold transition-colors inline-flex items-center gap-1"
+                                title="Send ticket to Kitchen/Manager WhatsApp"
                               >
-                                <span>Receipt</span>
-                                <ExternalLink className="w-3 h-3" />
-                              </Link>
+                                <MessageCircle className="w-3 h-3" />
+                                <span>Kitchen</span>
+                              </a>
+
+                              {/* Rider Dispatch WhatsApp (for delivery) */}
+                              {order.type === "delivery" && (
+                                <a
+                                  href={getRiderWhatsAppUrl(order)}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="px-2 py-1 rounded-lg bg-purple-50 hover:bg-purple-600 text-purple-700 hover:text-white text-[11px] font-bold transition-colors inline-flex items-center gap-1"
+                                  title="Send pickup & delivery info to Rider"
+                                >
+                                  <Truck className="w-3 h-3" />
+                                  <span>Rider</span>
+                                </a>
+                              )}
+
+                              {/* Customer Status Update WhatsApp */}
+                              <a
+                                href={getCustomerWhatsAppUrl(order, order.status.replace("_", " ").toUpperCase())}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                className="px-2 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-[11px] font-bold transition-colors inline-flex items-center gap-1"
+                                title="Send status update to Customer's WhatsApp"
+                              >
+                                <Send className="w-3 h-3" />
+                                <span>Customer</span>
+                              </a>
+
+                              {/* View Details / Receipt */}
+                              <button
+                                type="button"
+                                onClick={() => setSelectedOrderForModal(order)}
+                                className="px-2 py-1 rounded-lg bg-stone-100 hover:bg-stone-200 text-stone-700 text-[11px] font-bold transition-colors inline-flex items-center gap-1"
+                                title="View Complete Ticket"
+                              >
+                                <Eye className="w-3 h-3" />
+                              </button>
                             </div>
                           </div>
                         </td>
@@ -843,13 +1200,16 @@ export default function AdminDashboardPage() {
                       </td>
 
                       <td className="py-3.5 px-5">
-                        <Link
-                          href={`/order/confirmation/${tx.orderId}`}
-                          target="_blank"
+                        <button
+                          type="button"
+                          onClick={() => {
+                            const o = orders.find((x) => x.id === tx.orderId);
+                            if (o) setSelectedOrderForModal(o);
+                          }}
                           className="font-mono text-xs text-brand-green font-bold hover:underline"
                         >
                           {tx.orderId}
-                        </Link>
+                        </button>
                       </td>
 
                       <td className="py-3.5 px-5">
@@ -908,6 +1268,172 @@ export default function AdminDashboardPage() {
                 )}
               </tbody>
             </table>
+          </div>
+        </div>
+      )}
+
+      {/* ORDER DETAILS & PRINT SLIP MODAL */}
+      {selectedOrderForModal && (
+        <div className="fixed inset-0 z-50 overflow-y-auto bg-black/60 backdrop-blur-xs flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-2xl w-full p-6 sm:p-8 space-y-6 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            {/* Modal Header */}
+            <div className="flex items-start justify-between border-b border-brand-border pb-4">
+              <div>
+                <span className="text-xs font-mono font-bold text-brand-green bg-brand-green/10 px-2.5 py-1 rounded-full">
+                  #{selectedOrderForModal.id}
+                </span>
+                <h2 className="font-heading font-black text-2xl text-brand-deep mt-2">
+                  Kitchen Ticket & Dispatch Slip
+                </h2>
+                <p className="text-xs text-brand-muted mt-0.5">
+                  Placed {new Date(selectedOrderForModal.createdAt).toLocaleString()}
+                </p>
+              </div>
+
+              <button
+                type="button"
+                onClick={() => setSelectedOrderForModal(null)}
+                className="w-8 h-8 rounded-full bg-stone-100 hover:bg-stone-200 text-brand-deep flex items-center justify-center transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Customer & Delivery Card */}
+            <div className="p-4 rounded-2xl bg-stone-50 border border-brand-border grid grid-cols-1 sm:grid-cols-2 gap-4 text-xs">
+              <div>
+                <span className="text-brand-muted block font-semibold uppercase tracking-wider text-[10px]">
+                  Customer
+                </span>
+                <p className="font-bold text-brand-deep text-sm mt-0.5">
+                  {selectedOrderForModal.customer.name}
+                </p>
+                <a
+                  href={`tel:${selectedOrderForModal.customer.phone}`}
+                  className="text-brand-green font-bold flex items-center gap-1 mt-1 hover:underline"
+                >
+                  <Phone className="w-3.5 h-3.5" />
+                  <span>{selectedOrderForModal.customer.phone}</span>
+                </a>
+              </div>
+
+              <div>
+                <span className="text-brand-muted block font-semibold uppercase tracking-wider text-[10px]">
+                  Fulfillment ({selectedOrderForModal.type.toUpperCase()})
+                </span>
+                {selectedOrderForModal.type === "delivery" ? (
+                  <div className="mt-0.5 text-stone-700">
+                    <p className="font-medium">{selectedOrderForModal.customer.address}</p>
+                    {selectedOrderForModal.customer.landmark && (
+                      <p className="text-brand-muted text-[11px]">
+                        Landmark: {selectedOrderForModal.customer.landmark}
+                      </p>
+                    )}
+                    {selectedOrderForModal.customer.deliveryNotes && (
+                      <p className="text-amber-800 text-[11px] font-semibold mt-0.5">
+                        Note: {selectedOrderForModal.customer.deliveryNotes}
+                      </p>
+                    )}
+                  </div>
+                ) : (
+                  <p className="font-bold text-stone-800 mt-0.5">
+                    {selectedOrderForModal.customer.pickupTime || selectedOrderForModal.customer.timeSlot || "Standard Schedule"}
+                  </p>
+                )}
+              </div>
+            </div>
+
+            {/* Items List */}
+            <div className="space-y-3">
+              <h4 className="font-heading font-black text-sm text-brand-deep border-b border-brand-border pb-2">
+                Ordered Dishes & Drinks
+              </h4>
+              <div className="divide-y divide-brand-border/60">
+                {selectedOrderForModal.items.map((item, idx) => (
+                  <div key={idx} className="py-2.5 flex items-center justify-between text-xs sm:text-sm">
+                    <div className="flex items-center gap-2">
+                      <span className="w-6 h-6 rounded-full bg-brand-green/10 text-brand-green font-black text-xs flex items-center justify-center">
+                        {item.quantity}×
+                      </span>
+                      <div>
+                        <span className="font-bold text-brand-deep">{item.name}</span>
+                        {item.isPack && (
+                          <span className="text-[10px] ml-1.5 font-bold px-1.5 py-0.2 rounded bg-emerald-100 text-emerald-800">
+                            Pack
+                          </span>
+                        )}
+                        {item.meta && (
+                          <p className="text-[11px] text-brand-muted">
+                            {[item.meta.swallowName, item.meta.soupName].filter(Boolean).join(" + ")}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                    <span className="font-heading font-black text-brand-deep">
+                      {formatPrice(item.price * item.quantity)}
+                    </span>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* Calculations Breakdown */}
+            <div className="p-4 rounded-2xl bg-brand-cream/60 border border-brand-border space-y-1.5 text-xs">
+              <div className="flex justify-between text-brand-muted">
+                <span>Food Subtotal</span>
+                <span className="font-semibold text-brand-deep">{formatPrice(selectedOrderForModal.subtotal)}</span>
+              </div>
+              {selectedOrderForModal.takeawayFee > 0 && (
+                <div className="flex justify-between text-brand-muted">
+                  <span>Takeaway Packaging ({selectedOrderForModal.takeawayPacks} packs)</span>
+                  <span className="font-semibold text-brand-deep">{formatPrice(selectedOrderForModal.takeawayFee)}</span>
+                </div>
+              )}
+              {selectedOrderForModal.deliveryFee > 0 && (
+                <div className="flex justify-between text-brand-muted">
+                  <span>Delivery Dispatch</span>
+                  <span className="font-semibold text-brand-deep">{formatPrice(selectedOrderForModal.deliveryFee)}</span>
+                </div>
+              )}
+              <div className="pt-2 border-t border-brand-border flex justify-between items-baseline font-heading font-black text-base text-brand-deep">
+                <span>Total Amount</span>
+                <span className="text-brand-green text-lg">{formatPrice(selectedOrderForModal.total)}</span>
+              </div>
+            </div>
+
+            {/* Actions: WhatsApp Dispatch & Print */}
+            <div className="flex flex-col sm:flex-row items-center gap-2.5 pt-2">
+              <a
+                href={getAdminWhatsAppUrl(selectedOrderForModal)}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold py-3 px-4 rounded-btn text-xs shadow-md transition-all"
+              >
+                <MessageCircle className="w-4 h-4" />
+                <span>Send WhatsApp to Kitchen</span>
+              </a>
+
+              {selectedOrderForModal.type === "delivery" && (
+                <a
+                  href={getRiderWhatsAppUrl(selectedOrderForModal)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 bg-purple-600 hover:bg-purple-700 text-white font-extrabold py-3 px-4 rounded-btn text-xs shadow-md transition-all"
+                >
+                  <Truck className="w-4 h-4" />
+                  <span>Send WhatsApp to Rider</span>
+                </a>
+              )}
+
+              <button
+                type="button"
+                onClick={() => window.print()}
+                className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-stone-100 hover:bg-stone-200 text-brand-deep font-bold py-3 px-4 rounded-btn text-xs transition-colors"
+              >
+                <Printer className="w-4 h-4" />
+                <span>Print Slip</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

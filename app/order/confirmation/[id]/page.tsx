@@ -14,8 +14,10 @@ import {
   MessageCircle,
   UtensilsCrossed,
 } from "lucide-react";
-import { Order, OrderStatus } from "@/types/order";
+import { Order } from "@/types/order";
 import { formatPrice } from "@/lib/utils";
+import { getAdminWhatsAppUrl } from "@/lib/whatsappAlert";
+import { Printer } from "lucide-react";
 
 interface ConfirmationPageProps {
   params: Promise<{ id: string }>;
@@ -27,23 +29,39 @@ export default function OrderConfirmationPage({ params }: ConfirmationPageProps)
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    let found = false;
     try {
       const stored = localStorage.getItem(`order_${resolvedParams.id}`);
       if (stored) {
         setOrder(JSON.parse(stored));
+        found = true;
       } else {
         const historyStr = localStorage.getItem("taste_of_naija_orders");
         if (historyStr) {
           const history = JSON.parse(historyStr);
-          const found = history.find((o: Order) => o.id === resolvedParams.id);
-          if (found) {
-            setOrder(found);
+          const localOrder = history.find((o: Order) => o.id === resolvedParams.id);
+          if (localOrder) {
+            setOrder(localOrder);
+            found = true;
           }
         }
       }
     } catch {
       // ignore
-    } finally {
+    }
+
+    // Cloud fallback if not in local storage
+    if (!found) {
+      fetch(`/api/orders?orderId=${resolvedParams.id}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data?.order) {
+            setOrder(data.order);
+          }
+        })
+        .catch(() => {})
+        .finally(() => setLoading(false));
+    } else {
       setLoading(false);
     }
   }, [resolvedParams.id]);
@@ -235,29 +253,55 @@ export default function OrderConfirmationPage({ params }: ConfirmationPageProps)
         </div>
       </div>
 
-      {/* Support & Action Buttons */}
-      <div className="flex flex-col sm:flex-row items-center gap-3">
-        <a
-          href="tel:09071649725"
-          className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 bg-brand-deep hover:bg-black text-white font-bold py-3.5 px-6 rounded-btn text-sm shadow-sm transition-colors"
-        >
-          <Phone className="w-4 h-4 text-brand-gold" />
-          <span>Call Helpline: 09071649725</span>
-        </a>
+      {/* WhatsApp Kitchen Alert Card */}
+      <div className="p-5 rounded-3xl bg-emerald-50 border border-emerald-200 shadow-sm flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div className="flex items-center gap-3">
+          <div className="w-12 h-12 rounded-2xl bg-[#25D366] text-white flex items-center justify-center shrink-0 shadow-md">
+            <MessageCircle className="w-7 h-7" />
+          </div>
+          <div>
+            <h4 className="font-heading font-black text-sm text-brand-deep">
+              Want Instant Kitchen Confirmation?
+            </h4>
+            <p className="text-xs text-brand-muted">
+              Send your order ticket directly to the chef & kitchen hotline on WhatsApp.
+            </p>
+          </div>
+        </div>
 
         <a
-          href={`https://wa.me/2349071649725?text=Hello%20Taste%20of%20Naija,%20I%20have%20an%20inquiry%20regarding%20my%20order%20${displayOrder.id}`}
+          href={getAdminWhatsAppUrl(displayOrder)}
           target="_blank"
           rel="noopener noreferrer"
-          className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white font-bold py-3.5 px-6 rounded-btn text-sm shadow-sm transition-colors"
+          className="inline-flex items-center justify-center gap-2 bg-[#25D366] hover:bg-[#20ba59] text-white font-extrabold py-3 px-5 rounded-btn text-xs shadow-md transition-all active:scale-95 shrink-0"
         >
-          <MessageCircle className="w-5 h-5" />
-          <span>WhatsApp (09071649725)</span>
+          <MessageCircle className="w-4 h-4" />
+          <span>Notify Kitchen on WhatsApp</span>
+        </a>
+      </div>
+
+      {/* Support & Action Buttons */}
+      <div className="flex flex-col sm:flex-row items-center gap-3">
+        <button
+          type="button"
+          onClick={() => window.print()}
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-white border border-brand-border hover:bg-stone-50 text-brand-deep font-bold py-3.5 px-5 rounded-btn text-xs sm:text-sm shadow-xs transition-colors"
+        >
+          <Printer className="w-4 h-4 text-brand-muted" />
+          <span>Print Receipt</span>
+        </button>
+
+        <a
+          href="tel:09071649725"
+          className="w-full sm:w-auto flex-1 inline-flex items-center justify-center gap-2 bg-brand-deep hover:bg-black text-white font-bold py-3.5 px-6 rounded-btn text-xs sm:text-sm shadow-sm transition-colors"
+        >
+          <Phone className="w-4 h-4 text-brand-gold" />
+          <span>Call: 09071649725</span>
         </a>
 
         <Link
           href="/order"
-          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand-green hover:bg-brand-green-hover text-white font-bold py-3.5 px-6 rounded-btn text-sm shadow-sm transition-colors"
+          className="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-brand-green hover:bg-brand-green-hover text-white font-bold py-3.5 px-6 rounded-btn text-xs sm:text-sm shadow-sm transition-colors"
         >
           <span>Order More</span>
           <ArrowRight className="w-4 h-4" />
