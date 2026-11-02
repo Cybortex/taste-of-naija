@@ -15,15 +15,15 @@ export function Logo({
   size = "md",
 }: LogoProps) {
   const iconSizes = {
-    sm: "w-8 h-8",
-    md: "w-10 h-10 sm:w-11 sm:h-11",
-    lg: "w-14 h-14",
+    sm: "w-7 h-7 sm:w-8 sm:h-8",
+    md: "w-9 h-9 sm:w-11 sm:h-11",
+    lg: "w-12 h-12 sm:w-14 sm:h-14",
   };
 
   const titleSizes = {
-    sm: "text-base",
-    md: "text-lg sm:text-xl",
-    lg: "text-2xl sm:text-3xl",
+    sm: "text-sm sm:text-base",
+    md: "text-base sm:text-lg md:text-xl",
+    lg: "text-xl sm:text-3xl",
   };
 
   const isDark = theme === "dark";

@@ -30,7 +30,7 @@ export default function OrderPage() {
   return (
     <div className="max-w-[1200px] mx-auto px-4 sm:px-6 py-6 sm:py-10 pb-32">
       {/* Sticky Top Stepper Navigation */}
-      <div className="sticky top-20 z-30 bg-[#F8F5F0]/95 backdrop-blur-md py-3.5 mb-6 sm:mb-8 border-b border-brand-border/70 -mx-4 px-4 sm:-mx-6 sm:px-6 shadow-2xs">
+      <div className="sticky top-16 sm:top-20 z-30 bg-[#F8F5F0]/95 backdrop-blur-md py-3.5 mb-6 sm:mb-8 border-b border-brand-border/70 -mx-4 px-4 sm:-mx-6 sm:px-6 shadow-2xs">
         <div className="flex items-center justify-between max-w-2xl mx-auto relative">
           {/* Connecting Line */}
           <div className="absolute top-1/2 left-0 right-0 -translate-y-1/2 h-1 bg-stone-200 -z-0" />
