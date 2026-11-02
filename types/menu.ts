@@ -19,6 +19,7 @@ export interface MenuItem {
   isPack: boolean; // Swallow+Soup, Rice, Pepper soup/grill, Combos are packs (₦250 takeaway fee)
   isPopular?: boolean;
   isSpicy?: boolean;
+  image?: string;
   imageSlug?: string;
   ingredients?: string[];
   allergens?: string[];
